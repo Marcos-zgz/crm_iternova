@@ -3,66 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Torre de Control - Expedientes</title>
+  <title>Torre de Control - Carreteras</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .drag-over { background-color: rgba(203, 213, 225, 0.6); border: 2px dashed #64748b; }
-  </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
-
-  <header class="bg-slate-900 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-xl font-bold tracking-wide">Torre de Control IterNova</h1>
-        <p class="text-xs text-slate-400">Arrastra tarjetas entre columnas o resuélvelas</p>
-      </div>
-      <button onclick="cargarExpedientes()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-sm font-medium transition shadow">
-        ↻ Actualizar
-      </button>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans p-6">
+  <header class="max-w-7xl mx-auto mb-8 flex justify-between items-center border-b border-slate-200 pb-4">
+    <div>
+      <h1 class="text-2xl font-black tracking-tight text-slate-900">Torre de Control · Carreteras</h1>
+      <p class="text-xs text-slate-500 font-medium">Gestión ágil de expedientes en trámite</p>
     </div>
+    <button onclick="cargarExpedientes()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">
+      🔄 Actualizar
+    </button>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      
-      <!-- Columna 1 -->
-      <section class="bg-slate-200/80 p-3 rounded-lg flex flex-col min-h-[500px]">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
-          <h2 class="font-semibold text-slate-700 text-sm">Requerimientos / Subsanación</h2>
-          <span id="badge-requerimiento" class="text-xs bg-slate-300 text-slate-800 px-2.5 py-0.5 rounded-full font-bold">0</span>
-        </div>
-        <div id="col-requerimiento" data-col="requerimiento" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" class="space-y-3 flex-1 overflow-y-auto rounded p-1 transition-colors"></div>
-      </section>
+  <main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Columna 1 -->
+    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+        <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Requerimientos / Subsanación</h2>
+        <span id="badge-requerimiento" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
+      </div>
+      <div id="col-requerimiento" class="flex-1 overflow-y-auto space-y-3 p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'requerimiento')"></div>
+    </section>
 
-      <!-- Columna 2 -->
-      <section class="bg-slate-200/80 p-3 rounded-lg flex flex-col min-h-[500px]">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
-          <h2 class="font-semibold text-slate-700 text-sm">Visita de Campo</h2>
-          <span id="badge-visita_campo" class="text-xs bg-slate-300 text-slate-800 px-2.5 py-0.5 rounded-full font-bold">0</span>
-        </div>
-        <div id="col-visita_campo" data-col="visita_campo" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" class="space-y-3 flex-1 overflow-y-auto rounded p-1 transition-colors"></div>
-      </section>
+    <!-- Columna 2 -->
+    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+        <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Visita de Campo</h2>
+        <span id="badge-visita_campo" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
+      </div>
+      <div id="col-visita_campo" class="flex-1 overflow-y-auto space-y-3 p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'visita_campo')"></div>
+    </section>
 
-      <!-- Columna 3 -->
-      <section class="bg-slate-200/80 p-3 rounded-lg flex flex-col min-h-[500px]">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
-          <h2 class="font-semibold text-slate-700 text-sm">Contactar Interesado</h2>
-          <span id="badge-contactar_interesado" class="text-xs bg-slate-300 text-slate-800 px-2.5 py-0.5 rounded-full font-bold">0</span>
-        </div>
-        <div id="col-contactar_interesado" data-col="contactar_interesado" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" class="space-y-3 flex-1 overflow-y-auto rounded p-1 transition-colors"></div>
-      </section>
+    <!-- Columna 3 -->
+    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+        <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Contactar Interesado</h2>
+        <span id="badge-contactar_interesado" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
+      </div>
+      <div id="col-contactar_interesado" class="flex-1 overflow-y-auto space-y-3 p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'contactar_interesado')"></div>
+    </section>
 
-      <!-- Columna 4 -->
-      <section class="bg-slate-200/80 p-3 rounded-lg flex flex-col min-h-[500px]">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
-          <h2 class="font-semibold text-slate-700 text-sm">En su tejado</h2>
-          <span id="badge-informe_externo" class="text-xs bg-slate-300 text-slate-800 px-2.5 py-0.5 rounded-full font-bold">0</span>
-        </div>
-        <div id="col-informe_externo" data-col="informe_externo" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" class="space-y-3 flex-1 overflow-y-auto rounded p-1 transition-colors"></div>
-      </section>
-
-    </div>
+    <!-- Columna 4 -->
+    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+        <h2 class="font-bold text-sky-800 text-xs tracking-wide uppercase">En su Tejado</h2>
+        <span id="badge-informe_externo" class="text-xs bg-sky-100 font-bold px-2 py-0.5 rounded-full text-sky-700">0</span>
+      </div>
+      <div id="col-informe_externo" class="flex-1 overflow-y-auto space-y-3 p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'informe_externo')"></div>
+    </section>
   </main>
 
   <script>
@@ -71,152 +61,163 @@
     async function cargarExpedientes() {
       try {
         const res = await fetch('/api/expedientes');
-        const items = await res.json();
-        
-        COLS.forEach(col => {
-          document.getElementById(`col-${col}`).innerHTML = '';
-          document.getElementById(`badge-${col}`).innerText = '0';
-        });
-
-        items.forEach(exp => {
-          const target = document.getElementById(`col-${exp.estado_bloqueo}`) || document.getElementById('col-requerimiento');
-          target.appendChild(crearTarjeta(exp));
-        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
 
         COLS.forEach(col => {
-          const count = document.getElementById(`col-${col}`).children.length;
-          document.getElementById(`badge-${col}`).innerText = count;
+          const contenedor = document.getElementById(`col-${col}`);
+          if (contenedor) contenedor.innerHTML = '';
+        });
+
+        data.forEach(exp => {
+          const colId = COLS.includes(exp.estado_bloqueo) ? exp.estado_bloqueo : 'requerimiento';
+          const contenedor = document.getElementById(`col-${colId}`);
+          if (contenedor) contenedor.appendChild(crearTarjeta(exp));
+        });
+
+        COLS.forEach(col => {
+          const contenedor = document.getElementById(`col-${col}`);
+          const badge = document.getElementById(`badge-${col}`);
+          if (contenedor && badge) badge.innerText = contenedor.children.length;
         });
       } catch (err) {
-        console.error('Error al cargar:', err);
+        console.error("Error al cargar expedientes:", err);
       }
     }
 
-function crearTarjeta(exp) {
-  const el = document.createElement('article');
-  el.id = `card-${exp.codigo}`;
-  el.draggable = true;
-  el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
-  el.className = 'bg-white p-4 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition cursor-grab active:cursor-grabbing';
+    function crearTarjeta(exp) {
+      const el = document.createElement('article');
+      el.id = `card-${exp.codigo}`;
+      el.draggable = true;
+      el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
+      el.className = 'bg-white p-4 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition cursor-grab active:cursor-grabbing';
 
-  let circulo = 'bg-slate-300 ring-slate-100 text-slate-600';
-  let badgeTexto = 'Sin plazo';
+      let circulo = 'bg-slate-300 ring-slate-100 text-slate-600';
+      let badgeTexto = 'Sin plazo';
 
-  if (exp.estado_bloqueo === 'informe_externo') {
-    circulo = 'bg-sky-500 ring-sky-200';
-    badgeTexto = 'En su tejado';
-  } else if (exp.fecha_limite) {
-    const hoy = new Date();
-    hoy.setHours(0,0,0,0);
-    const limite = new Date(exp.fecha_limite);
-    limite.setHours(0,0,0,0);
-    const diffDias = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
+      if (exp.estado_bloqueo === 'informe_externo') {
+        circulo = 'bg-sky-500 ring-sky-200';
+        badgeTexto = 'En su tejado';
+      } else if (exp.fecha_limite) {
+        const hoy = new Date();
+        hoy.setHours(0,0,0,0);
+        const limite = new Date(exp.fecha_limite);
+        limite.setHours(0,0,0,0);
+        const diffDias = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
 
-    if (diffDias < 0) {
-      circulo = 'bg-rose-600 ring-rose-200 animate-pulse';
-      badgeTexto = `Vencido (${Math.abs(diffDias)}d)`;
-    } else if (diffDias <= 5) {
-      circulo = 'bg-rose-500 ring-rose-200 animate-pulse';
-      badgeTexto = `¡${diffDias}d restantes!`;
-    } else if (diffDias <= 15) {
-      circulo = 'bg-amber-500 ring-amber-200';
-      badgeTexto = `${diffDias}d restantes`;
-    } else {
-      circulo = 'bg-emerald-500 ring-emerald-200';
-      badgeTexto = `${diffDias}d restantes`;
-    }
-  }
-
-  // Enlace a IterNova si existe URL
-  const linkHtml = exp.url_iternova 
-    ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir expediente en IterNova" class="font-bold text-blue-700 hover:text-blue-900 hover:underline text-base tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
-    : `<span class="font-bold text-slate-900 text-base tracking-tight">${exp.codigo}</span>`;
-
-  el.innerHTML = `
-    <div class="flex items-center justify-between gap-3 mb-2">
-      <div class="flex items-center gap-2.5">
-        <span title="${badgeTexto}" class="w-6 h-6 rounded-full ring-4 ${circulo} flex-shrink-0"></span>
-        ${linkHtml}
-      </div>
-      <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto" class="text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-1 rounded text-xs font-semibold border border-transparent hover:border-emerald-200 transition">
-        ✓ Hecho
-      </button>
-    </div>
-    
-    <p class="font-medium text-slate-800 text-xs mb-2 leading-snug">${exp.titulo || 'Sin descripción'}</p>
-    
-    <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded mb-2">
-      🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
-    </div>
-
-    ${exp.notas ? `<div class="text-xs bg-amber-50 border-l-2 border-amber-400 p-1.5 text-amber-900 rounded-r mb-2">📝 ${exp.notas}</div>` : ''}
-
-    <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-100">
-      <span>Límite: ${exp.fecha_limite || 'N/A'}</span>
-      <span class="font-semibold text-slate-600">${badgeTexto}</span>
-    </div>
-  `;
-  return el;
-}
-    export async function onRequestDelete({ request, env }) {
-  try {
-    const { codigo } = await request.json();
-    
-    if (!codigo) {
-      return new Response(JSON.stringify({ error: 'Falta el código de expediente' }), { status: 400 });
-    }
-
-    await env.DB.prepare('DELETE FROM expedientes_seguimiento WHERE codigo = ?')
-      .bind(codigo)
-      .run();
-
-    return new Response(JSON.stringify({ ok: true, eliminado: codigo }), {
-      headers: { 
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        if (diffDias < 0) {
+          circulo = 'bg-rose-600 ring-rose-200 animate-pulse';
+          badgeTexto = `Vencido (${Math.abs(diffDias)}d)`;
+        } else if (diffDias <= 5) {
+          circulo = 'bg-rose-500 ring-rose-200 animate-pulse';
+          badgeTexto = `¡${diffDias}d restantes!`;
+        } else if (diffDias <= 15) {
+          circulo = 'bg-amber-500 ring-amber-200';
+          badgeTexto = `${diffDias}d restantes`;
+        } else {
+          circulo = 'bg-emerald-500 ring-emerald-200';
+          badgeTexto = `${diffDias}d restantes`;
+        }
       }
-    });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { 
-      status: 500,
-      headers: { 'Access-Control-Allow-Origin': '*' }
-    });
-  }
-}
 
-export async function onRequestGet({ env }) {
-// ... el resto de funciones siguen igual
-    // Drag & Drop
+      const linkHtml = exp.url_iternova 
+        ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir en IterNova" class="font-bold text-blue-700 hover:text-blue-900 hover:underline text-base tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
+        : `<span class="font-bold text-slate-900 text-base tracking-tight">${exp.codigo}</span>`;
+
+      el.innerHTML = `
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <div class="flex items-center gap-2.5">
+            <span title="${badgeTexto}" class="w-6 h-6 rounded-full ring-4 ${circulo} flex-shrink-0"></span>
+            ${linkHtml}
+          </div>
+          <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto y borrar" class="text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-1 rounded text-xs font-semibold border border-transparent hover:border-emerald-200 transition">
+            ✓ Hecho
+          </button>
+        </div>
+        
+        <p class="font-medium text-slate-800 text-xs mb-2 leading-snug">${exp.titulo || 'Sin descripción'}</p>
+        
+        <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded mb-2">
+          🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
+        </div>
+
+        ${exp.notas ? `<div class="text-xs bg-amber-50 border-l-2 border-amber-400 p-1.5 text-amber-900 rounded-r mb-2">📝 ${exp.notas}</div>` : ''}
+
+        <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-100">
+          <span>Límite: ${exp.fecha_limite || 'N/A'}</span>
+          <span class="font-semibold text-slate-600">${badgeTexto}</span>
+        </div>
+      `;
+      return el;
+    }
+
+    async function archivarExpediente(codigo) {
+      if (!confirm(`¿Eliminar definitivamente el expediente ${codigo} del panel?`)) return;
+
+      const tarjeta = document.getElementById(`card-${codigo}`);
+      if (tarjeta) {
+        tarjeta.style.opacity = '0.3';
+        tarjeta.style.pointerEvents = 'none';
+      }
+
+      try {
+        const res = await fetch('/api/expedientes', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ codigo: codigo })
+        });
+
+        if (res.ok) {
+          if (tarjeta) tarjeta.remove();
+          COLS.forEach(col => {
+            const count = document.getElementById(`col-${col}`).children.length;
+            document.getElementById(`badge-${col}`).innerText = count;
+          });
+        } else {
+          throw new Error(`Error ${res.status}`);
+        }
+      } catch (err) {
+        alert(`Error al eliminar: ${err.message}`);
+        if (tarjeta) {
+          tarjeta.style.opacity = '1';
+          tarjeta.style.pointerEvents = 'auto';
+        }
+      }
+    }
+
     function allowDrop(e) {
       e.preventDefault();
-      e.currentTarget.classList.add('drag-over');
+      e.currentTarget.classList.add('bg-slate-200/50');
     }
 
     function dragLeave(e) {
-      e.currentTarget.classList.remove('drag-over');
+      e.currentTarget.classList.remove('bg-slate-200/50');
     }
 
-    async function drop(e) {
+    async function drop(e, nuevoEstado) {
       e.preventDefault();
-      const colEl = e.currentTarget;
-      colEl.classList.remove('drag-over');
+      e.currentTarget.classList.remove('bg-slate-200/50');
       const codigo = e.dataTransfer.getData('text/plain');
-      const nuevoEstado = colEl.getAttribute('data-col');
+      const tarjeta = document.getElementById(`card-${codigo}`);
+      if (!tarjeta) return;
 
-      if (!codigo || !nuevoEstado) return;
+      e.currentTarget.appendChild(tarjeta);
 
-      // Actualizar UI inmediatamente
-      const card = document.getElementById(`card-${codigo}`);
-      if (card) colEl.appendChild(card);
-
-      // Persistir en D1
-      await fetch('/api/expedientes', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ codigo, estado_bloqueo: nuevoEstado })
+      COLS.forEach(col => {
+        const count = document.getElementById(`col-${col}`).children.length;
+        document.getElementById(`badge-${col}`).innerText = count;
       });
 
-      cargarExpedientes();
+      try {
+        await fetch('/api/expedientes', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ codigo: codigo, estado_bloqueo: nuevoEstado })
+        });
+        cargarExpedientes();
+      } catch (err) {
+        console.error("Error al mover:", err);
+      }
     }
 
     cargarExpedientes();
