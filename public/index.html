@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Torre de Control - Expedientes</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .drag-over { background-color: rgba(203, 213, 225, 0.6); border: 2px dashed #64748b; }
+  </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
 
@@ -12,10 +15,10 @@
     <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
       <div>
         <h1 class="text-xl font-bold tracking-wide">Torre de Control IterNova</h1>
-        <p class="text-xs text-slate-400">Seguimiento de expedientes atascados y plazos</p>
+        <p class="text-xs text-slate-400">Arrastra tarjetas entre columnas o resuélvelas</p>
       </div>
-      <button onclick="cargarExpedientes()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-sm font-medium transition">
-        Actualizar
+      <button onclick="cargarExpedientes()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-sm font-medium transition shadow">
+        ↻ Actualizar
       </button>
     </div>
   </header>
@@ -23,76 +26,82 @@
   <main class="max-w-7xl mx-auto px-4 py-6">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       
-      <!-- Columna 1: Requerimientos -->
-      <section class="bg-slate-200/70 p-3 rounded-lg flex flex-col">
+      <!-- Columna 1 -->
+      <section class="bg-slate-200/80 p-3 rounded-lg flex flex-col min-h-[500px]">
         <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
           <h2 class="font-semibold text-slate-700 text-sm">Requerimientos / Subsanación</h2>
-          <span id="badge-requerimiento" class="text-xs bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+          <span id="badge-requerimiento" class="text-xs bg-slate-300 text-slate-800 px-2.5 py-0.5 rounded-full font-bold">0</span>
         </div>
-        <div id="col-requerimiento" class="space-y-3 flex-1 overflow-y-auto"></div>
+        <div id="col-requerimiento" data-col="requerimiento" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" class="space-y-3 flex-1 overflow-y-auto rounded p-1 transition-colors"></div>
       </section>
 
-      <!-- Columna 2: Visita de Campo -->
-      <section class="bg-slate-200/70 p-3 rounded-lg flex flex-col">
+      <!-- Columna 2 -->
+      <section class="bg-slate-200/80 p-3 rounded-lg flex flex-col min-h-[500px]">
         <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
           <h2 class="font-semibold text-slate-700 text-sm">Visita de Campo</h2>
-          <span id="badge-visita_campo" class="text-xs bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+          <span id="badge-visita_campo" class="text-xs bg-slate-300 text-slate-800 px-2.5 py-0.5 rounded-full font-bold">0</span>
         </div>
-        <div id="col-visita_campo" class="space-y-3 flex-1 overflow-y-auto"></div>
+        <div id="col-visita_campo" data-col="visita_campo" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" class="space-y-3 flex-1 overflow-y-auto rounded p-1 transition-colors"></div>
       </section>
 
-      <!-- Columna 3: Contactar Interesado -->
-      <section class="bg-slate-200/70 p-3 rounded-lg flex flex-col">
+      <!-- Columna 3 -->
+      <section class="bg-slate-200/80 p-3 rounded-lg flex flex-col min-h-[500px]">
         <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
           <h2 class="font-semibold text-slate-700 text-sm">Contactar Interesado</h2>
-          <span id="badge-contactar_interesado" class="text-xs bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+          <span id="badge-contactar_interesado" class="text-xs bg-slate-300 text-slate-800 px-2.5 py-0.5 rounded-full font-bold">0</span>
         </div>
-        <div id="col-contactar_interesado" class="space-y-3 flex-1 overflow-y-auto"></div>
+        <div id="col-contactar_interesado" data-col="contactar_interesado" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" class="space-y-3 flex-1 overflow-y-auto rounded p-1 transition-colors"></div>
       </section>
 
-      <!-- Columna 4: Informe Sectorial -->
-      <section class="bg-slate-200/70 p-3 rounded-lg flex flex-col">
+      <!-- Columna 4 -->
+      <section class="bg-slate-200/80 p-3 rounded-lg flex flex-col min-h-[500px]">
         <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
-          <h2 class="font-semibold text-slate-700 text-sm">Informe Técnico / Externo</h2>
-          <span id="badge-informe_externo" class="text-xs bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+          <h2 class="font-semibold text-slate-700 text-sm">En su tejado</h2>
+          <span id="badge-informe_externo" class="text-xs bg-slate-300 text-slate-800 px-2.5 py-0.5 rounded-full font-bold">0</span>
         </div>
-        <div id="col-informe_externo" class="space-y-3 flex-1 overflow-y-auto"></div>
+        <div id="col-informe_externo" data-col="informe_externo" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)" class="space-y-3 flex-1 overflow-y-auto rounded p-1 transition-colors"></div>
       </section>
 
     </div>
   </main>
 
   <script>
+    const COLS = ['requerimiento', 'visita_campo', 'contactar_interesado', 'informe_externo'];
+
     async function cargarExpedientes() {
       try {
         const res = await fetch('/api/expedientes');
         const items = await res.json();
         
-        ['requerimiento', 'visita_campo', 'contactar_interesado', 'informe_externo'].forEach(col => {
+        COLS.forEach(col => {
           document.getElementById(`col-${col}`).innerHTML = '';
           document.getElementById(`badge-${col}`).innerText = '0';
         });
 
         items.forEach(exp => {
-          const colEl = document.getElementById(`col-${exp.estado_bloqueo}`) || document.getElementById('col-requerimiento');
-          colEl.appendChild(crearTarjeta(exp));
+          const target = document.getElementById(`col-${exp.estado_bloqueo}`) || document.getElementById('col-requerimiento');
+          target.appendChild(crearTarjeta(exp));
         });
 
-        ['requerimiento', 'visita_campo', 'contactar_interesado', 'informe_externo'].forEach(col => {
+        COLS.forEach(col => {
           const count = document.getElementById(`col-${col}`).children.length;
           document.getElementById(`badge-${col}`).innerText = count;
         });
       } catch (err) {
-        console.error('Error cargando expedientes:', err);
+        console.error('Error al cargar:', err);
       }
     }
 
     function crearTarjeta(exp) {
       const el = document.createElement('article');
-      el.className = 'bg-white p-3.5 rounded shadow-sm border border-slate-200 hover:shadow transition';
+      el.id = `card-${exp.codigo}`;
+      el.draggable = true;
+      el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
+      el.className = 'bg-white p-4 rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition cursor-grab active:cursor-grabbing relative';
 
-      let semaforo = 'bg-slate-100 text-slate-600 border-slate-200';
-      let diasTexto = 'Sin plazo fijado';
+      // Semáforo circular grande
+      let semaforoColor = 'bg-slate-300 text-slate-700 ring-slate-200';
+      let textoPlazo = 'Sin plazo';
 
       if (exp.fecha_limite) {
         const hoy = new Date();
@@ -100,32 +109,90 @@
         const diffDias = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
 
         if (diffDias < 0) {
-          semaforo = 'bg-rose-50 text-rose-700 border-rose-200';
-          diasTexto = `Vencido (${Math.abs(diffDias)}d)`;
-        } else if (diffDias <= 3) {
-          semaforo = 'bg-amber-50 text-amber-700 border-amber-200';
-          diasTexto = `Urgente (${diffDias}d)`;
+          semaforoColor = 'bg-rose-500 text-white ring-rose-200 animate-pulse';
+          textoPlazo = `${Math.abs(diffDias)}d vencido`;
+        } else if (diffDias <= 5) {
+          semaforoColor = 'bg-amber-500 text-white ring-amber-200';
+          textoPlazo = `${diffDias}d restantes`;
         } else {
-          semaforo = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-          diasTexto = `${diffDias} días restantes`;
+          semaforoColor = 'bg-emerald-500 text-white ring-emerald-200';
+          textoPlazo = `${diffDias}d restantes`;
         }
       }
 
       el.innerHTML = `
-        <div class="flex justify-between items-start gap-2 mb-1.5">
-          <span class="font-bold text-blue-700 text-sm tracking-wide">${exp.codigo}</span>
-          <span class="text-[11px] px-2 py-0.5 rounded border font-medium ${semaforo}">
-            ${diasTexto}
-          </span>
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div class="flex items-center gap-2.5">
+            <span title="${textoPlazo}" class="w-5 h-5 rounded-full flex-shrink-0 ring-4 ${semaforoColor}"></span>
+            <span class="font-bold text-blue-700 text-sm tracking-wide">${exp.codigo}</span>
+          </div>
+          <button onclick="archivarExpediente('${exp.codigo}')" title="Marcar como resuelto / quitar del panel" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition text-xs font-semibold">
+            ✕ Resolver
+          </button>
         </div>
+        
         <p class="font-semibold text-slate-900 text-xs mb-1 line-clamp-2">${exp.titulo || 'Sin título'}</p>
-        <p class="text-xs text-slate-600 mb-1">${exp.interesado || 'Sin interesado'}</p>
+        <p class="text-xs text-slate-600 mb-1.5">${exp.interesado || 'Sin interesado'}</p>
+        
         <div class="text-[11px] text-slate-500 bg-slate-50 p-1.5 rounded mb-2 font-mono">
           📍 ${exp.localizacion || 'No indicada'}
         </div>
-        ${exp.notas ? `<p class="text-xs text-amber-900 bg-amber-50/70 p-1.5 rounded border border-amber-100 mb-2">📝 ${exp.notas}</p>` : ''}
+
+        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+          <span>📅 ${exp.fecha_limite || 'Sin fecha límite'}</span>
+          <span class="font-medium text-slate-600">${textoPlazo}</span>
+        </div>
+
+        ${exp.notas ? `<p class="mt-2 text-xs text-amber-900 bg-amber-50 p-1.5 rounded border border-amber-200">📝 ${exp.notas}</p>` : ''}
       `;
       return el;
+    }
+
+    async function archivarExpediente(codigo) {
+      if (!confirm(`¿Dar por resuelto y quitar el expediente ${codigo} del tablero?`)) return;
+      try {
+        const res = await fetch('/api/expedientes', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ codigo, resuelto: 1 })
+        });
+        if (res.ok) cargarExpedientes();
+      } catch (err) {
+        alert('Error al resolver expediente');
+      }
+    }
+
+    // Drag & Drop
+    function allowDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function dragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    async function drop(e) {
+      e.preventDefault();
+      const colEl = e.currentTarget;
+      colEl.classList.remove('drag-over');
+      const codigo = e.dataTransfer.getData('text/plain');
+      const nuevoEstado = colEl.getAttribute('data-col');
+
+      if (!codigo || !nuevoEstado) return;
+
+      // Actualizar UI inmediatamente
+      const card = document.getElementById(`card-${codigo}`);
+      if (card) colEl.appendChild(card);
+
+      // Persistir en D1
+      await fetch('/api/expedientes', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo, estado_bloqueo: nuevoEstado })
+      });
+
+      cargarExpedientes();
     }
 
     cargarExpedientes();
