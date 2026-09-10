@@ -5,13 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Torre de Control - Carreteras</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
+ <style>
     @media print {
       body { background: white !important; padding: 0 !important; color: black !important; }
       header, .no-imprimir { display: none !important; }
       #vista-informe { display: block !important; margin: 0 !important; max-width: 100% !important; }
       .tabla-print { border: 1px solid #cbd5e1 !important; }
       .tabla-print th, .tabla-print td { border-bottom: 1px solid #e2e8f0 !important; }
+    }
+
+    /* EFECTO DOMINÓ / BARAJA */
+    .columna-domino {
+      display: flex;
+      flex-direction: column;
+      padding-top: 8px;
+      padding-bottom: 120px; /* espacio para que la última no quede cortada al abrirse */
+    }
+
+    .tarjeta-domino {
+      position: relative;
+      margin-top: -68px; /* Monta una tarjeta encima de la otra */
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 -2px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .tarjeta-domino:first-child {
+      margin-top: 0 !important;
+    }
+
+    /* Cuando pasas el ratón por encima */
+    .tarjeta-domino:hover {
+      margin-bottom: 72px; /* Empuja a las siguientes hacia abajo para que se lea entera */
+      transform: translateY(-4px) scale(1.02);
+      z-index: 50 !important;
+      box-shadow: 0 14px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border-color: #94a3b8;
     }
   </style>
 </head>
