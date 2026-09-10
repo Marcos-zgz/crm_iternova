@@ -158,6 +158,34 @@ function crearTarjeta(exp) {
   `;
   return el;
 }
+    export async function onRequestDelete({ request, env }) {
+  try {
+    const { codigo } = await request.json();
+    
+    if (!codigo) {
+      return new Response(JSON.stringify({ error: 'Falta el código de expediente' }), { status: 400 });
+    }
+
+    await env.DB.prepare('DELETE FROM expedientes_seguimiento WHERE codigo = ?')
+      .bind(codigo)
+      .run();
+
+    return new Response(JSON.stringify({ ok: true, eliminado: codigo }), {
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), { 
+      status: 500,
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    });
+  }
+}
+
+export async function onRequestGet({ env }) {
+// ... el resto de funciones siguen igual
     // Drag & Drop
     function allowDrop(e) {
       e.preventDefault();
