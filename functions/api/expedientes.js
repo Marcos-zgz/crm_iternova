@@ -65,11 +65,34 @@ export async function onRequestPost({ request, env }) {
   }
 }
 
+// Actualizar estado al arrastrar de columna o archivar
+export async function onRequestPatch({ request, env }) {
+  try {
+    const { codigo, estado_bloqueo, resuelto } = await request.json();
+    
+    if (resuelto !== undefined) {
+      await env.DB.prepare('UPDATE expedientes_seguimiento SET resuelto = ?, updated_at = CURRENT_TIMESTAMP WHERE codigo = ?')
+        .bind(resuelto, codigo)
+        .run();
+    } else if (estado_bloqueo) {
+      await env.DB.prepare('UPDATE expedientes_seguimiento SET estado_bloqueo = ?, updated_at = CURRENT_TIMESTAMP WHERE codigo = ?')
+        .bind(estado_bloqueo, codigo)
+        .run();
+    }
+
+    return new Response(JSON.stringify({ ok: true }), {
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+  }
+}
+
 export async function onRequestOptions() {
   return new Response(null, {
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type'
     }
   });
