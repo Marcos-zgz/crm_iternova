@@ -17,7 +17,7 @@
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 font-sans p-6">
 
-  <!-- Cabecera estilo barra de control -->
+  <!-- Cabecera de control -->
   <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 -mx-6 -mt-6 mb-8 px-8 py-4 flex flex-wrap justify-between items-center gap-4">
     <div class="flex items-center gap-3">
       <span class="text-xl">🛣️</span>
@@ -27,12 +27,13 @@
       </div>
     </div>
 
-    <!-- Filtros en cabecera -->
+    <!-- Filtros en tiempo real -->
     <div id="filtros-cabecera" class="flex flex-wrap items-center gap-2">
-      <input type="text" id="filtro-carretera" placeholder="Carretera (ej: A-123)" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-sky-500 w-36">
-      <input type="text" id="filtro-pk" placeholder="Filtro PK / texto" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-sky-500 w-32">
-      
-      <button onclick="generarInforme()" class="bg-sky-700 hover:bg-sky-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1.5">
+      <input type="text" id="filtro-carretera" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar vía (ej: A-123)" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-sky-500 w-36">
+      <input type="text" id="filtro-pk" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar PK / texto" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-sky-500 w-32">
+      <button onclick="limpiarFiltros()" title="Limpiar filtros" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 transition">✕</button>
+
+      <button onclick="generarInforme()" class="bg-sky-700 hover:bg-sky-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1.5 ml-2">
         <span>📄</span> Hoja de Ruta / PDF
       </button>
       <button onclick="cargarExpedientes()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
@@ -41,7 +42,7 @@
     </div>
   </header>
 
-  <!-- VISTA 1: TABLERO KANBAN (4 COLUMNAS) -->
+  <!-- VISTA 1: TABLERO KANBAN -->
   <main id="vista-tablero" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
     <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
       <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
@@ -76,7 +77,7 @@
     </section>
   </main>
 
-  <!-- VISTA 2: INFORME / RUTA FILTRADA PARA IMPRIMIR EN PDF -->
+  <!-- VISTA 2: INFORME / IMPRESIÓN -->
   <section id="vista-informe" class="hidden max-w-7xl mx-auto">
     <div class="no-imprimir flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6">
       <button onclick="volverAlTablero()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1">
@@ -124,29 +125,77 @@
         const res = await fetch('/api/expedientes');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         todosLosExpedientes = await res.json();
-        renderizarTablero();
+        renderizarTablero(todosLosExpedientes);
       } catch (err) {
         console.error("Error al cargar expedientes:", err);
       }
     }
 
-    function renderizarTablero() {
+    function renderizarTablero(lista) {
       COLS.forEach(col => {
         const contenedor = document.getElementById(`col-${col}`);
         if (contenedor) contenedor.innerHTML = '';
       });
 
-      todosLosExpedientes.forEach(exp => {
+      lista.forEach(exp => {
         const colId = COLS.includes(exp.estado_bloqueo) ? exp.estado_bloqueo : 'requerimiento';
         const contenedor = document.getElementById(`col-${colId}`);
         if (contenedor) contenedor.appendChild(crearTarjeta(exp));
       });
 
+      actualizarContadores();
+    }
+
+    function actualizarContadores() {
       COLS.forEach(col => {
         const contenedor = document.getElementById(`col-${col}`);
         const badge = document.getElementById(`badge-${col}`);
-        if (contenedor && badge) badge.innerText = contenedor.children.length;
+        if (contenedor && badge) {
+          const visibles = Array.from(contenedor.children).filter(c => !c.classList.contains('hidden')).length;
+          badge.innerText = visibles;
+        }
       });
+    }
+
+    // FILTRO EN TIEMPO REAL (al teclear en los inputs)
+    function obtenerFiltrados() {
+      const fCarretera = document.getElementById('filtro-carretera').value.trim().toLowerCase();
+      const fPk = document.getElementById('filtro-pk').value.trim().toLowerCase();
+
+      return todosLosExpedientes.filter(exp => {
+        const loc = (exp.localizacion || '').toLowerCase();
+        const cod = (exp.codigo || '').toLowerCase();
+        const tit = (exp.titulo || '').toLowerCase();
+        const not = (exp.notas || '').toLowerCase();
+
+        const coincideCarretera = !fCarretera || loc.includes(fCarretera);
+        const coincidePk = !fPk || loc.includes(fPk) || cod.includes(fPk) || tit.includes(fPk) || not.includes(fPk);
+        return coincideCarretera && coincidePk;
+      });
+    }
+
+    function aplicarFiltroEnVivo() {
+      const filtrados = obtenerFiltrados();
+      const idsVisibles = new Set(filtrados.map(e => `card-${e.codigo}`));
+
+      todosLosExpedientes.forEach(exp => {
+        const card = document.getElementById(`card-${exp.codigo}`);
+        if (card) {
+          if (idsVisibles.has(`card-${exp.codigo}`)) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        }
+      });
+
+      actualizarContadores();
+    }
+
+    function limpiarFiltros() {
+      document.getElementById('filtro-carretera').value = '';
+      document.getElementById('filtro-pk').value = '';
+      aplicarFiltroEnVivo();
     }
 
     function crearTarjeta(exp) {
@@ -215,26 +264,14 @@
       return el;
     }
 
-    // GESTIÓN DE VISTAS (TABLERO <-> INFORME)
+    // CAMBIO DE VISTA (TABLERO <-> INFORME)
     function generarInforme() {
-      const fCarretera = document.getElementById('filtro-carretera').value.trim().toLowerCase();
-      const fPk = document.getElementById('filtro-pk').value.trim().toLowerCase();
-
-      const filtrados = todosLosExpedientes.filter(exp => {
-        const loc = (exp.localizacion || '').toLowerCase();
-        const cod = (exp.codigo || '').toLowerCase();
-        const tit = (exp.titulo || '').toLowerCase();
-
-        const coincideCarretera = !fCarretera || loc.includes(fCarretera);
-        const coincidePk = !fPk || loc.includes(fPk) || cod.includes(fPk) || tit.includes(fPk);
-        return coincideCarretera && coincidePk;
-      });
-
+      const filtrados = obtenerFiltrados();
       const tbody = document.getElementById('filas-informe');
       tbody.innerHTML = '';
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400 font-medium">No hay expedientes que coincidan con los filtros aplicados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400 font-medium">No hay expedientes que coincidan con los filtros.</td></tr>`;
       } else {
         filtrados.forEach(exp => {
           const tr = document.createElement('tr');
@@ -284,10 +321,7 @@
         if (res.ok) {
           todosLosExpedientes = todosLosExpedientes.filter(e => e.codigo !== codigo);
           if (tarjeta) tarjeta.remove();
-          COLS.forEach(col => {
-            const count = document.getElementById(`col-${col}`).children.length;
-            document.getElementById(`badge-${col}`).innerText = count;
-          });
+          actualizarContadores();
         } else {
           throw new Error(`Error ${res.status}`);
         }
@@ -317,11 +351,7 @@
       if (!tarjeta) return;
 
       e.currentTarget.appendChild(tarjeta);
-
-      COLS.forEach(col => {
-        const count = document.getElementById(`col-${col}`).children.length;
-        document.getElementById(`badge-${col}`).innerText = count;
-      });
+      actualizarContadores();
 
       try {
         await fetch('/api/expedientes', {
