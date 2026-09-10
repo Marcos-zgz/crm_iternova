@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torre de Control - Expedientes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+
+  <header class="bg-slate-900 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-xl font-bold tracking-wide">Torre de Control IterNova</h1>
+        <p class="text-xs text-slate-400">Seguimiento de expedientes atascados y plazos</p>
+      </div>
+      <button onclick="cargarExpedientes()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-sm font-medium transition">
+        Actualizar
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      
+      <!-- Columna 1: Requerimientos -->
+      <section class="bg-slate-200/70 p-3 rounded-lg flex flex-col">
+        <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
+          <h2 class="font-semibold text-slate-700 text-sm">Requerimientos / Subsanación</h2>
+          <span id="badge-requerimiento" class="text-xs bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div id="col-requerimiento" class="space-y-3 flex-1 overflow-y-auto"></div>
+      </section>
+
+      <!-- Columna 2: Visita de Campo -->
+      <section class="bg-slate-200/70 p-3 rounded-lg flex flex-col">
+        <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
+          <h2 class="font-semibold text-slate-700 text-sm">Visita de Campo</h2>
+          <span id="badge-visita_campo" class="text-xs bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div id="col-visita_campo" class="space-y-3 flex-1 overflow-y-auto"></div>
+      </section>
+
+      <!-- Columna 3: Contactar Interesado -->
+      <section class="bg-slate-200/70 p-3 rounded-lg flex flex-col">
+        <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
+          <h2 class="font-semibold text-slate-700 text-sm">Contactar Interesado</h2>
+          <span id="badge-contactar_interesado" class="text-xs bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div id="col-contactar_interesado" class="space-y-3 flex-1 overflow-y-auto"></div>
+      </section>
+
+      <!-- Columna 4: Informe Sectorial -->
+      <section class="bg-slate-200/70 p-3 rounded-lg flex flex-col">
+        <div class="flex items-center justify-between mb-3 border-b border-slate-300 pb-2">
+          <h2 class="font-semibold text-slate-700 text-sm">Informe Técnico / Externo</h2>
+          <span id="badge-informe_externo" class="text-xs bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div id="col-informe_externo" class="space-y-3 flex-1 overflow-y-auto"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    async function cargarExpedientes() {
+      try {
+        const res = await fetch('/api/expedientes');
+        const items = await res.json();
+        
+        ['requerimiento', 'visita_campo', 'contactar_interesado', 'informe_externo'].forEach(col => {
+          document.getElementById(`col-${col}`).innerHTML = '';
+          document.getElementById(`badge-${col}`).innerText = '0';
+        });
+
+        items.forEach(exp => {
+          const colEl = document.getElementById(`col-${exp.estado_bloqueo}`) || document.getElementById('col-requerimiento');
+          colEl.appendChild(crearTarjeta(exp));
+        });
+
+        ['requerimiento', 'visita_campo', 'contactar_interesado', 'informe_externo'].forEach(col => {
+          const count = document.getElementById(`col-${col}`).children.length;
+          document.getElementById(`badge-${col}`).innerText = count;
+        });
+      } catch (err) {
+        console.error('Error cargando expedientes:', err);
+      }
+    }
+
+    function crearTarjeta(exp) {
+      const el = document.createElement('article');
+      el.className = 'bg-white p-3.5 rounded shadow-sm border border-slate-200 hover:shadow transition';
+
+      let semaforo = 'bg-slate-100 text-slate-600 border-slate-200';
+      let diasTexto = 'Sin plazo fijado';
+
+      if (exp.fecha_limite) {
+        const hoy = new Date();
+        const limite = new Date(exp.fecha_limite);
+        const diffDias = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
+
+        if (diffDias < 0) {
+          semaforo = 'bg-rose-50 text-rose-700 border-rose-200';
+          diasTexto = `Vencido (${Math.abs(diffDias)}d)`;
+        } else if (diffDias <= 3) {
+          semaforo = 'bg-amber-50 text-amber-700 border-amber-200';
+          diasTexto = `Urgente (${diffDias}d)`;
+        } else {
+          semaforo = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+          diasTexto = `${diffDias} días restantes`;
+        }
+      }
+
+      el.innerHTML = `
+        <div class="flex justify-between items-start gap-2 mb-1.5">
+          <span class="font-bold text-blue-700 text-sm tracking-wide">${exp.codigo}</span>
+          <span class="text-[11px] px-2 py-0.5 rounded border font-medium ${semaforo}">
+            ${diasTexto}
+          </span>
+        </div>
+        <p class="font-semibold text-slate-900 text-xs mb-1 line-clamp-2">${exp.titulo || 'Sin título'}</p>
+        <p class="text-xs text-slate-600 mb-1">${exp.interesado || 'Sin interesado'}</p>
+        <div class="text-[11px] text-slate-500 bg-slate-50 p-1.5 rounded mb-2 font-mono">
+          📍 ${exp.localizacion || 'No indicada'}
+        </div>
+        ${exp.notas ? `<p class="text-xs text-amber-900 bg-amber-50/70 p-1.5 rounded border border-amber-100 mb-2">📝 ${exp.notas}</p>` : ''}
+      `;
+      return el;
+    }
+
+    cargarExpedientes();
+  </script>
+</body>
+</html>
