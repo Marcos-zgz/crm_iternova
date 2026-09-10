@@ -7,13 +7,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 font-sans p-6">
-  <header class="max-w-7xl mx-auto mb-8 flex justify-between items-center border-b border-slate-200 pb-4">
-    <div>
-      <h1 class="text-2xl font-black tracking-tight text-slate-900">Torre de Control · Carreteras</h1>
-      <p class="text-xs text-slate-500 font-medium">Gestión ágil de expedientes en trámite</p>
+ <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 -mx-6 -mt-6 mb-8 px-8 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <span class="text-xl">🛣️</span>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight text-white leading-none">Torre de Control · Carreteras</h1>
+        <p class="text-xs text-slate-400 mt-1 font-mono">Panel operativo de expedientes e inspección</p>
+      </div>
     </div>
-    <button onclick="cargarExpedientes()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">
-      🔄 Actualizar
+    <button onclick="cargarExpedientes()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-2">
+      <span>🔄</span> Actualizar
     </button>
   </header>
 
