@@ -14,33 +14,42 @@
       .tabla-print th, .tabla-print td { border-bottom: 1px solid #e2e8f0 !important; }
     }
 
-    /* EFECTO DOMINÓ / BARAJA COMPACTA */
+    /* EFECTO DOMINÓ / BARAJA INTELIGENTE */
     .columna-domino {
       display: flex;
       flex-direction: column;
-      padding-top: 6px;
-      padding-bottom: 180px; /* Margen para que la última tarjeta no se corte al abrirse */
+      gap: 10px;
+      padding-top: 4px;
+      padding-bottom: 80px;
     }
 
     .tarjeta-domino {
       position: relative;
-      /* Solapamiento vertical pronunciado (~1.5 cm más arriba) */
-      margin-top: -135px;
       transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 -3px 8px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
     }
 
-    .tarjeta-domino:first-child {
-      margin-top: 0 !important;
+    /* La zona inferior (ctra, notas, plazo) permanece replegada por defecto */
+    .tarjeta-domino .detalles-ocultos {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.28s ease, opacity 0.2s ease, margin-top 0.2s ease;
+      margin-top: 0;
     }
 
-    /* Al pasar el ratón: se despliega completa, empuja a las demás y se eleva */
+    /* Al pasar el ratón: se eleva y despliega los detalles hacia abajo */
     .tarjeta-domino:hover {
-      margin-bottom: 140px; /* Despeja el espacio inferior para mostrar carretera y notas */
-      transform: translateY(-6px) scale(1.02);
+      transform: translateY(-3px) scale(1.015);
       z-index: 50 !important;
-      box-shadow: 0 16px 28px -6px rgba(0, 0, 0, 0.18), 0 8px 12px -6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 16px 26px -6px rgba(0, 0, 0, 0.16), 0 8px 12px -6px rgba(0, 0, 0, 0.08);
       border-color: #94a3b8;
+    }
+
+    .tarjeta-domino:hover .detalles-ocultos {
+      max-height: 220px;
+      opacity: 1;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -71,7 +80,7 @@
     </div>
   </header>
 
-  <!-- VISTA 1: TABLERO KANBAN CON COLUMNAS DOMINÓ -->
+  <!-- VISTA 1: TABLERO KANBAN -->
   <main id="vista-tablero" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
     <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
       <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
@@ -265,26 +274,26 @@
         ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir en IterNova" class="font-bold text-blue-700 hover:text-blue-900 hover:underline text-sm tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
         : `<span class="font-bold text-slate-900 text-sm tracking-tight">${exp.codigo}</span>`;
 
-      // Estructura: La cabecera visible contiene Semáforo + Código + Título compacto
-      // La carretera, notas y botón de acción quedan ocultos hasta pasar el ratón (hover)
+      // 1. ZONA VISIBLE: Semáforo + Código + Botón Hecho + TÍTULO COMPLETO
+      // 2. ZONA OCULTA (se despliega en hover): Carretera/PK + Notas + Fecha límite
       el.innerHTML = `
-        <!-- CABECERA SIEMPRE VISIBLE EN LA BARAJA -->
         <div class="flex items-center justify-between gap-2 mb-1.5">
           <div class="flex items-center gap-2 min-w-0">
             <span title="${badgeTexto}" class="w-4 h-4 rounded-full ring-2 ${circulo} flex-shrink-0"></span>
             ${linkHtml}
           </div>
-          <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto y borrar" class="text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-0.5 rounded text-xs font-semibold border border-transparent hover:border-emerald-200 transition">
+          <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto y borrar" class="text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-0.5 rounded text-xs font-semibold border border-transparent hover:border-emerald-200 transition flex-shrink-0">
             ✓ Hecho
           </button>
         </div>
         
-        <p class="font-semibold text-slate-800 text-xs leading-snug line-clamp-1 mb-2.5" title="${exp.titulo || 'Sin descripción'}">
+        <!-- Título íntegro sin cortes -->
+        <p class="font-medium text-slate-800 text-xs leading-snug">
           ${exp.titulo || 'Sin descripción'}
         </p>
         
-        <!-- DETALLES QUE ASOMAN AL DESPLEGAR EN HOVER -->
-        <div class="space-y-2 pt-1 border-t border-slate-100">
+        <!-- Se despliega suavemente al pasar el ratón -->
+        <div class="detalles-ocultos pt-2 border-t border-slate-100 space-y-2">
           <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
             🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
           </div>
