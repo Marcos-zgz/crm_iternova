@@ -93,61 +93,67 @@
     }
 
     function crearTarjeta(exp) {
-      const el = document.createElement('article');
-      el.id = `card-${exp.codigo}`;
-      el.draggable = true;
-      el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
-      el.className = 'bg-white p-4 rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition cursor-grab active:cursor-grabbing relative';
+  const el = document.createElement('article');
+  el.id = `card-${exp.codigo}`;
+  el.draggable = true;
+  el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
+  el.className = 'bg-white p-4 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition cursor-grab active:cursor-grabbing';
 
-      // Semáforo circular grande
-      let semaforoColor = 'bg-slate-300 text-slate-700 ring-slate-200';
-      let textoPlazo = 'Sin plazo';
+  // Semáforo circular de 24px (grande y nítido)
+  let circulo = 'bg-slate-300 ring-slate-100 text-slate-600';
+  let badgeTexto = 'Sin plazo';
 
-      if (exp.fecha_limite) {
-        const hoy = new Date();
-        const limite = new Date(exp.fecha_limite);
-        const diffDias = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
+  if (exp.fecha_limite) {
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0);
+    const limite = new Date(exp.fecha_limite);
+    limite.setHours(0,0,0,0);
+    const diffDias = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
 
-        if (diffDias < 0) {
-          semaforoColor = 'bg-rose-500 text-white ring-rose-200 animate-pulse';
-          textoPlazo = `${Math.abs(diffDias)}d vencido`;
-        } else if (diffDias <= 5) {
-          semaforoColor = 'bg-amber-500 text-white ring-amber-200';
-          textoPlazo = `${diffDias}d restantes`;
-        } else {
-          semaforoColor = 'bg-emerald-500 text-white ring-emerald-200';
-          textoPlazo = `${diffDias}d restantes`;
-        }
-      }
-
-      el.innerHTML = `
-        <div class="flex items-start justify-between gap-3 mb-2">
-          <div class="flex items-center gap-2.5">
-            <span title="${textoPlazo}" class="w-5 h-5 rounded-full flex-shrink-0 ring-4 ${semaforoColor}"></span>
-            <span class="font-bold text-blue-700 text-sm tracking-wide">${exp.codigo}</span>
-          </div>
-          <button onclick="archivarExpediente('${exp.codigo}')" title="Marcar como resuelto / quitar del panel" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition text-xs font-semibold">
-            ✕ Resolver
-          </button>
-        </div>
-        
-        <p class="font-semibold text-slate-900 text-xs mb-1 line-clamp-2">${exp.titulo || 'Sin título'}</p>
-        <p class="text-xs text-slate-600 mb-1.5">${exp.interesado || 'Sin interesado'}</p>
-        
-        <div class="text-[11px] text-slate-500 bg-slate-50 p-1.5 rounded mb-2 font-mono">
-          📍 ${exp.localizacion || 'No indicada'}
-        </div>
-
-        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-          <span>📅 ${exp.fecha_limite || 'Sin fecha límite'}</span>
-          <span class="font-medium text-slate-600">${textoPlazo}</span>
-        </div>
-
-        ${exp.notas ? `<p class="mt-2 text-xs text-amber-900 bg-amber-50 p-1.5 rounded border border-amber-200">📝 ${exp.notas}</p>` : ''}
-      `;
-      return el;
+    if (diffDias < 0) {
+      circulo = 'bg-red-600 ring-red-200 animate-pulse';
+      badgeTexto = `Vencido hace ${Math.abs(diffDias)}d`;
+    } else if (diffDias <= 2) {
+      circulo = 'bg-red-500 ring-red-200 animate-pulse';
+      badgeTexto = `¡${diffDias}d restantes!`;
+    } else if (diffDias <= 7) {
+      circulo = 'bg-amber-500 ring-amber-200';
+      badgeTexto = `${diffDias}d restantes`;
+    } else {
+      circulo = 'bg-emerald-500 ring-emerald-200';
+      badgeTexto = `${diffDias}d restantes`;
     }
+  } else if (exp.estado_bloqueo === 'informe_externo') {
+    circulo = 'bg-sky-500 ring-sky-200';
+    badgeTexto = 'Esperando respuesta';
+  }
 
+  el.innerHTML = `
+    <div class="flex items-center justify-between gap-3 mb-2.5">
+      <div class="flex items-center gap-3">
+        <span class="w-6 h-6 rounded-full ring-4 ${circulo} flex-shrink-0"></span>
+        <span class="font-bold text-slate-900 text-base tracking-tight">${exp.codigo}</span>
+      </div>
+      <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto" class="text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-1 rounded text-xs font-semibold border border-transparent hover:border-emerald-200 transition">
+        ✓ Hecho
+      </button>
+    </div>
+    
+    <p class="font-medium text-slate-800 text-xs mb-2.5 leading-snug">${exp.titulo || 'Sin descripción'}</p>
+    
+    <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md mb-2">
+      🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
+    </div>
+
+    ${exp.notas ? `<div class="text-xs bg-amber-50 border-l-2 border-amber-400 p-2 text-amber-900 rounded-r mb-2 font-sans">📝 ${exp.notas}</div>` : ''}
+
+    <div class="flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100">
+      <span>${exp.fecha_limite ? 'Límite: ' + exp.fecha_limite : 'Sin fecha'}</span>
+      <span class="font-semibold text-slate-600">${badgeTexto}</span>
+    </div>
+  `;
+  return el;
+}
     async function archivarExpediente(codigo) {
       if (!confirm(`¿Dar por resuelto y quitar el expediente ${codigo} del tablero?`)) return;
       try {
