@@ -6,30 +6,31 @@
   <title>Torre de Control - Carreteras</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    /* MODO IMPRESIÓN (Limpio para papel/PDF) */
     @media print {
       body { background: white !important; padding: 0 !important; color: black !important; }
       header, .no-imprimir { display: none !important; }
       #vista-informe { display: block !important; margin: 0 !important; max-width: 100% !important; }
-      .tabla-print { border: 1px solid #cbd5e1 !important; }
-      .tabla-print th, .tabla-print td { border-bottom: 1px solid #e2e8f0 !important; }
+      .tabla-print { border: 1px solid #cbd5e1 !important; background: white !important; color: black !important; }
+      .tabla-print th, .tabla-print td { border-bottom: 1px solid #e2e8f0 !important; color: black !important; }
     }
 
-    /* EFECTO DOMINÓ / BARAJA INTELIGENTE */
+    /* EFECTO DOMINÓ CON GLOW / NEÓN */
     .columna-domino {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding-top: 4px;
+      gap: 12px;
+      padding-top: 6px;
       padding-bottom: 80px;
     }
 
     .tarjeta-domino {
       position: relative;
-      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.35);
     }
 
-    /* La zona inferior (ctra, notas, plazo) permanece replegada por defecto */
+    /* Zona replegada por defecto */
     .tarjeta-domino .detalles-ocultos {
       max-height: 0;
       opacity: 0;
@@ -38,40 +39,56 @@
       margin-top: 0;
     }
 
-    /* Al pasar el ratón: se eleva y despliega los detalles hacia abajo */
+    /* Hover: elevación y brillo neón exterior */
     .tarjeta-domino:hover {
       transform: translateY(-3px) scale(1.015);
       z-index: 50 !important;
-      box-shadow: 0 16px 26px -6px rgba(0, 0, 0, 0.16), 0 8px 12px -6px rgba(0, 0, 0, 0.08);
-      border-color: #94a3b8;
+      box-shadow: 0 0 20px -2px rgba(56, 189, 248, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+      border-color: rgba(56, 189, 248, 0.5);
     }
 
     .tarjeta-domino:hover .detalles-ocultos {
-      max-height: 220px;
+      max-height: 240px;
       opacity: 1;
-      margin-top: 10px;
+      margin-top: 12px;
+    }
+
+    /* Efectos Glow para los semáforos */
+    .glow-rose {
+      box-shadow: 0 0 10px 2px rgba(244, 63, 94, 0.7);
+    }
+    .glow-amber {
+      box-shadow: 0 0 10px 2px rgba(245, 158, 11, 0.7);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 10px 2px rgba(16, 185, 129, 0.6);
+    }
+    .glow-sky {
+      box-shadow: 0 0 10px 2px rgba(14, 165, 233, 0.6);
     }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 font-sans p-6">
+<body class="bg-slate-950 min-h-screen text-slate-100 font-sans p-6 selection:bg-cyan-500 selection:text-black">
 
-  <!-- Cabecera de control -->
-  <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 -mx-6 -mt-6 mb-8 px-8 py-4 flex flex-wrap justify-between items-center gap-4">
+  <!-- Cabecera de control con acento cyan -->
+  <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 -mx-6 -mt-6 mb-8 px-8 py-4 flex flex-wrap justify-between items-center gap-4 shadow-lg shadow-black/40">
     <div class="flex items-center gap-3">
-      <span class="text-xl">🛣️</span>
+      <span class="text-xl drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]">🛣️</span>
       <div>
-        <h1 class="text-xl font-bold tracking-tight text-white leading-none">Torre de Control · Carreteras</h1>
+        <h1 class="text-xl font-bold tracking-tight text-white leading-none">
+          Torre de Control <span class="text-cyan-400 font-mono text-sm">· Carreteras</span>
+        </h1>
         <p class="text-xs text-slate-400 mt-1 font-mono">Panel operativo de expedientes e inspección</p>
       </div>
     </div>
 
-    <!-- Filtros en tiempo real -->
+    <!-- Filtros en cabecera -->
     <div id="filtros-cabecera" class="flex flex-wrap items-center gap-2">
-      <input type="text" id="filtro-carretera" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar vía (ej: A-123)" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-sky-500 w-36">
-      <input type="text" id="filtro-pk" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar PK / texto" class="bg-slate-800 border border-slate-700 text-white placeholder-slate-400 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-sky-500 w-32">
-      <button onclick="limpiarFiltros()" title="Limpiar filtros" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 transition">✕</button>
+      <input type="text" id="filtro-carretera" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar vía (ej: A-123)" class="bg-slate-950 border border-slate-700 text-cyan-300 placeholder-slate-500 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 w-36 transition">
+      <input type="text" id="filtro-pk" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar PK / texto" class="bg-slate-950 border border-slate-700 text-cyan-300 placeholder-slate-500 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 w-32 transition">
+      <button onclick="limpiarFiltros()" title="Limpiar filtros" class="bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 transition">✕</button>
 
-      <button onclick="generarInforme()" class="bg-sky-700 hover:bg-sky-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow flex items-center gap-1.5 ml-2">
+      <button onclick="generarInforme()" class="bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-[0_0_12px_rgba(6,182,212,0.15)] flex items-center gap-1.5 ml-2">
         <span>📄</span> Hoja de Ruta / PDF
       </button>
       <button onclick="cargarExpedientes()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
@@ -80,36 +97,40 @@
     </div>
   </header>
 
-  <!-- VISTA 1: TABLERO KANBAN -->
+  <!-- VISTA 1: TABLERO KANBAN EN TONOS OSCUROS -->
   <main id="vista-tablero" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
-    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
-      <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
-        <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Requerimientos / Subsanación</h2>
-        <span id="badge-requerimiento" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
+    <!-- Columna 1 -->
+    <section class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-4 flex flex-col h-[82vh] backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+        <h2 class="font-bold text-slate-300 text-xs tracking-wide uppercase">Requerimientos / Subsanación</h2>
+        <span id="badge-requerimiento" class="text-xs bg-slate-800 font-bold px-2 py-0.5 rounded-full text-cyan-400 border border-slate-700">0</span>
       </div>
       <div id="col-requerimiento" class="flex-1 overflow-y-auto columna-domino p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'requerimiento')"></div>
     </section>
 
-    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
-      <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
-        <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Visita de Campo</h2>
-        <span id="badge-visita_campo" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
+    <!-- Columna 2 -->
+    <section class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-4 flex flex-col h-[82vh] backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+        <h2 class="font-bold text-slate-300 text-xs tracking-wide uppercase">Visita de Campo</h2>
+        <span id="badge-visita_campo" class="text-xs bg-slate-800 font-bold px-2 py-0.5 rounded-full text-cyan-400 border border-slate-700">0</span>
       </div>
       <div id="col-visita_campo" class="flex-1 overflow-y-auto columna-domino p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'visita_campo')"></div>
     </section>
 
-    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
-      <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
-        <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Contactar Interesado</h2>
-        <span id="badge-contactar_interesado" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
+    <!-- Columna 3 -->
+    <section class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-4 flex flex-col h-[82vh] backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+        <h2 class="font-bold text-slate-300 text-xs tracking-wide uppercase">Contactar Interesado</h2>
+        <span id="badge-contactar_interesado" class="text-xs bg-slate-800 font-bold px-2 py-0.5 rounded-full text-cyan-400 border border-slate-700">0</span>
       </div>
       <div id="col-contactar_interesado" class="flex-1 overflow-y-auto columna-domino p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'contactar_interesado')"></div>
     </section>
 
-    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
-      <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
-        <h2 class="font-bold text-sky-800 text-xs tracking-wide uppercase">En su Tejado</h2>
-        <span id="badge-informe_externo" class="text-xs bg-sky-100 font-bold px-2 py-0.5 rounded-full text-sky-700">0</span>
+    <!-- Columna 4 -->
+    <section class="bg-slate-900/50 border border-sky-950/60 rounded-xl p-4 flex flex-col h-[82vh] backdrop-blur-sm">
+      <div class="flex items-center justify-between mb-3 border-b border-sky-900/50 pb-2">
+        <h2 class="font-bold text-sky-400 text-xs tracking-wide uppercase">En su Tejado</h2>
+        <span id="badge-informe_externo" class="text-xs bg-sky-950 font-bold px-2 py-0.5 rounded-full text-sky-300 border border-sky-800">0</span>
       </div>
       <div id="col-informe_externo" class="flex-1 overflow-y-auto columna-domino p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'informe_externo')"></div>
     </section>
@@ -117,30 +138,30 @@
 
   <!-- VISTA 2: INFORME / IMPRESIÓN -->
   <section id="vista-informe" class="hidden max-w-7xl mx-auto">
-    <div class="no-imprimir flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6">
-      <button onclick="volverAlTablero()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1">
+    <div class="no-imprimir flex items-center justify-between bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-800 mb-6">
+      <button onclick="volverAlTablero()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1 border border-slate-700">
         ← Volver al Tablero
       </button>
       <div class="flex items-center gap-3">
-        <span id="resumen-filtro" class="text-xs text-slate-500 font-medium"></span>
-        <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-2 rounded-lg transition shadow flex items-center gap-1.5">
+        <span id="resumen-filtro" class="text-xs text-slate-400 font-medium"></span>
+        <button onclick="window.print()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs px-5 py-2 rounded-lg transition shadow-[0_0_12px_rgba(16,185,129,0.2)] flex items-center gap-1.5">
           🖨️ Imprimir / Guardar en PDF
         </button>
       </div>
     </div>
 
-    <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 tabla-print">
-      <div class="border-b border-slate-200 pb-4 mb-6 flex justify-between items-end">
+    <div class="bg-slate-900 p-8 rounded-xl border border-slate-800 tabla-print">
+      <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-end">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">Hoja de Ruta · Inspección de Carreteras</h2>
-          <p class="text-xs text-slate-500 mt-1">Expedientes filtrados para visita técnica y seguimiento</p>
+          <h2 class="text-xl font-bold text-white">Hoja de Ruta · Inspección de Carreteras</h2>
+          <p class="text-xs text-slate-400 mt-1">Expedientes filtrados para visita técnica y seguimiento</p>
         </div>
-        <span id="fecha-impresion" class="text-xs font-mono text-slate-400"></span>
+        <span id="fecha-impresion" class="text-xs font-mono text-slate-500"></span>
       </div>
 
       <table class="w-full text-left text-xs border-collapse">
         <thead>
-          <tr class="border-b-2 border-slate-200 text-slate-500 uppercase text-[10px] tracking-wider">
+          <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
             <th class="py-2.5 px-3">Expediente</th>
             <th class="py-2.5 px-3">Ubicación (Carretera / PK)</th>
             <th class="py-2.5 px-3">Asunto / Título</th>
@@ -149,7 +170,7 @@
             <th class="py-2.5 px-3">Observaciones / Notas</th>
           </tr>
         </thead>
-        <tbody id="filas-informe" class="divide-y divide-slate-100"></tbody>
+        <tbody id="filas-informe" class="divide-y divide-slate-800"></tbody>
       </table>
     </div>
   </section>
@@ -240,13 +261,15 @@
       el.id = `card-${exp.codigo}`;
       el.draggable = true;
       el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
-      el.className = 'tarjeta-domino bg-white p-3.5 rounded-xl border border-slate-200 cursor-grab active:cursor-grabbing';
+      
+      // Tarjeta oscura con borde sutil
+      el.className = 'tarjeta-domino bg-slate-900 p-3.5 rounded-xl border border-slate-800 cursor-grab active:cursor-grabbing';
 
-      let circulo = 'bg-slate-300 ring-slate-100 text-slate-600';
+      let circulo = 'bg-slate-600 ring-slate-700 text-slate-400';
       let badgeTexto = 'Sin plazo';
 
       if (exp.estado_bloqueo === 'informe_externo') {
-        circulo = 'bg-sky-500 ring-sky-200';
+        circulo = 'bg-sky-400 ring-sky-950 glow-sky';
         badgeTexto = 'En su tejado';
       } else if (exp.fecha_limite) {
         const hoy = new Date();
@@ -256,53 +279,51 @@
         const diffDias = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
 
         if (diffDias < 0) {
-          circulo = 'bg-rose-600 ring-rose-200 animate-pulse';
+          circulo = 'bg-rose-500 ring-rose-950 glow-rose animate-pulse';
           badgeTexto = `Vencido (${Math.abs(diffDias)}d)`;
         } else if (diffDias <= 5) {
-          circulo = 'bg-rose-500 ring-rose-200 animate-pulse';
+          circulo = 'bg-rose-500 ring-rose-950 glow-rose animate-pulse';
           badgeTexto = `¡${diffDias}d restantes!`;
         } else if (diffDias <= 15) {
-          circulo = 'bg-amber-500 ring-amber-200';
+          circulo = 'bg-amber-400 ring-amber-950 glow-amber';
           badgeTexto = `${diffDias}d restantes`;
         } else {
-          circulo = 'bg-emerald-500 ring-emerald-200';
+          circulo = 'bg-emerald-400 ring-emerald-950 glow-emerald';
           badgeTexto = `${diffDias}d restantes`;
         }
       }
 
       const linkHtml = exp.url_iternova 
-        ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir en IterNova" class="font-bold text-blue-700 hover:text-blue-900 hover:underline text-sm tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
-        : `<span class="font-bold text-slate-900 text-sm tracking-tight">${exp.codigo}</span>`;
+        ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir en IterNova" class="font-bold text-cyan-400 hover:text-cyan-300 hover:underline text-sm tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
+        : `<span class="font-bold text-cyan-400 text-sm tracking-tight">${exp.codigo}</span>`;
 
-      // 1. ZONA VISIBLE: Semáforo + Código + Botón Hecho + TÍTULO COMPLETO
-      // 2. ZONA OCULTA (se despliega en hover): Carretera/PK + Notas + Fecha límite
       el.innerHTML = `
-        <div class="flex items-center justify-between gap-2 mb-1.5">
-          <div class="flex items-center gap-2 min-w-0">
-            <span title="${badgeTexto}" class="w-4 h-4 rounded-full ring-2 ${circulo} flex-shrink-0"></span>
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span title="${badgeTexto}" class="w-3.5 h-3.5 rounded-full ring-2 ${circulo} flex-shrink-0"></span>
             ${linkHtml}
           </div>
-          <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto y borrar" class="text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-0.5 rounded text-xs font-semibold border border-transparent hover:border-emerald-200 transition flex-shrink-0">
+          <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto y borrar" class="text-slate-400 hover:text-emerald-400 hover:bg-emerald-950/60 px-2 py-0.5 rounded text-xs font-semibold border border-transparent hover:border-emerald-800 transition flex-shrink-0">
             ✓ Hecho
           </button>
         </div>
         
-        <!-- Título íntegro sin cortes -->
-        <p class="font-medium text-slate-800 text-xs leading-snug">
+        <!-- Título legible en tono claro -->
+        <p class="font-normal text-slate-200 text-xs leading-relaxed">
           ${exp.titulo || 'Sin descripción'}
         </p>
         
-        <!-- Se despliega suavemente al pasar el ratón -->
-        <div class="detalles-ocultos pt-2 border-t border-slate-100 space-y-2">
-          <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+        <!-- Detalles ocultos que se revelan al hacer hover -->
+        <div class="detalles-ocultos pt-2.5 border-t border-slate-800/80 space-y-2">
+          <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-950 text-cyan-300 border border-slate-800 px-2.5 py-1 rounded">
             🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
           </div>
 
-          ${exp.notas ? `<div class="text-xs bg-amber-50 border-l-2 border-amber-400 p-1.5 text-amber-900 rounded-r">📝 ${exp.notas}</div>` : ''}
+          ${exp.notas ? `<div class="text-xs bg-amber-950/40 border-l-2 border-amber-500 p-2 text-amber-200 rounded-r">📝 ${exp.notas}</div>` : ''}
 
-          <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-100">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-800/60 font-mono">
             <span>Límite: ${exp.fecha_limite || 'N/A'}</span>
-            <span class="font-semibold text-slate-600">${badgeTexto}</span>
+            <span class="font-semibold text-slate-300">${badgeTexto}</span>
           </div>
         </div>
       `;
@@ -315,18 +336,18 @@
       tbody.innerHTML = '';
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400 font-medium">No hay expedientes que coincidan con los filtros.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-500 font-medium">No hay expedientes que coincidan con los filtros.</td></tr>`;
       } else {
         filtrados.forEach(exp => {
           const tr = document.createElement('tr');
-          tr.className = 'hover:bg-slate-50 transition';
+          tr.className = 'hover:bg-slate-800/50 transition';
           tr.innerHTML = `
-            <td class="py-3 px-3 font-bold font-mono text-slate-900">${exp.codigo}</td>
-            <td class="py-3 px-3 font-mono font-semibold text-slate-700">${exp.localizacion || 'Sin datos'}</td>
-            <td class="py-3 px-3 text-slate-800 max-w-xs">${exp.titulo || '-'}</td>
-            <td class="py-3 px-3 capitalize text-slate-600">${(exp.estado_bloqueo || '').replace('_', ' ')}</td>
-            <td class="py-3 px-3 text-slate-600 whitespace-nowrap">${exp.fecha_limite || 'Sin fecha'}</td>
-            <td class="py-3 px-3 text-amber-900 bg-amber-50/50">${exp.notas || '-'}</td>
+            <td class="py-3 px-3 font-bold font-mono text-cyan-400">${exp.codigo}</td>
+            <td class="py-3 px-3 font-mono font-semibold text-slate-300">${exp.localizacion || 'Sin datos'}</td>
+            <td class="py-3 px-3 text-slate-200 max-w-xs">${exp.titulo || '-'}</td>
+            <td class="py-3 px-3 capitalize text-slate-400">${(exp.estado_bloqueo || '').replace('_', ' ')}</td>
+            <td class="py-3 px-3 text-slate-400 whitespace-nowrap">${exp.fecha_limite || 'Sin fecha'}</td>
+            <td class="py-3 px-3 text-amber-300 bg-amber-950/20">${exp.notas || '-'}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -380,16 +401,16 @@
 
     function allowDrop(e) {
       e.preventDefault();
-      e.currentTarget.classList.add('bg-slate-200/50');
+      e.currentTarget.classList.add('bg-slate-800/40');
     }
 
     function dragLeave(e) {
-      e.currentTarget.classList.remove('bg-slate-200/50');
+      e.currentTarget.classList.remove('bg-slate-800/40');
     }
 
     async function drop(e, nuevoEstado) {
       e.preventDefault();
-      e.currentTarget.classList.remove('bg-slate-200/50');
+      e.currentTarget.classList.remove('bg-slate-800/40');
       const codigo = e.dataTransfer.getData('text/plain');
       const tarjeta = document.getElementById(`card-${codigo}`);
       if (!tarjeta) return;
