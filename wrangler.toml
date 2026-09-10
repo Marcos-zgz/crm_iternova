@@ -4,4 +4,4 @@ pages_build_output_dir = "public"
 [[d1_databases]]
 binding = "DB"
 database_name = "crm_iternova"
-database_id = "crm_iternova"
+database_id = "5fcd127f-98d4-4377-9b51-dab5cd22dd55"
