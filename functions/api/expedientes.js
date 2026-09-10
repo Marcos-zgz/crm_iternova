@@ -25,8 +25,8 @@ export async function onRequestPost({ request, env }) {
     const data = await request.json();
     const query = `
       INSERT INTO expedientes_seguimiento 
-        (codigo, titulo, interesado, localizacion, fecha_registro, estado_bloqueo, fecha_limite, notas, prioridad)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (codigo, titulo, interesado, localizacion, fecha_registro, estado_bloqueo, fecha_limite, notas, prioridad, url_iternova)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(codigo) DO UPDATE SET
         titulo=excluded.titulo,
         interesado=excluded.interesado,
@@ -35,6 +35,7 @@ export async function onRequestPost({ request, env }) {
         fecha_limite=excluded.fecha_limite,
         notas=excluded.notas,
         prioridad=excluded.prioridad,
+        url_iternova=excluded.url_iternova,
         resuelto=0,
         updated_at=CURRENT_TIMESTAMP
     `;
@@ -48,7 +49,8 @@ export async function onRequestPost({ request, env }) {
       data.estado_bloqueo || 'requerimiento',
       data.fecha_limite || null,
       data.notas || '',
-      data.prioridad || 'media'
+      data.prioridad || 'media',
+      data.url_iternova || null
     ).run();
 
     return new Response(JSON.stringify({ ok: true, codigo: data.codigo }), {
@@ -65,7 +67,6 @@ export async function onRequestPost({ request, env }) {
   }
 }
 
-// Actualizar estado al arrastrar de columna o archivar
 export async function onRequestPatch({ request, env }) {
   try {
     const { codigo, estado_bloqueo, resuelto } = await request.json();
