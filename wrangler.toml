@@ -1,0 +1,7 @@
+name = "crm-iternova"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "crm_iternova"
+database_id = "crm_iternova"
