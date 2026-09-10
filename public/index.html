@@ -70,38 +70,38 @@
     </div>
   </header>
 
-  <!-- VISTA 1: TABLERO KANBAN -->
+<!-- VISTA 1: TABLERO KANBAN -->
   <main id="vista-tablero" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
-    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
+    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
       <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
         <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Requerimientos / Subsanación</h2>
         <span id="badge-requerimiento" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
       </div>
-      <div id="col-requerimiento" class="flex-1 overflow-y-auto space-y-3 p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'requerimiento')"></div>
+      <div id="col-requerimiento" class="flex-1 overflow-y-auto columna-domino p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'requerimiento')"></div>
     </section>
 
-    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
+    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
       <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
         <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Visita de Campo</h2>
         <span id="badge-visita_campo" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
       </div>
-      <div id="col-visita_campo" class="flex-1 overflow-y-auto space-y-3 p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'visita_campo')"></div>
+      <div id="col-visita_campo" class="flex-1 overflow-y-auto columna-domino p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'visita_campo')"></div>
     </section>
 
-    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
+    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
       <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
         <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Contactar Interesado</h2>
         <span id="badge-contactar_interesado" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
       </div>
-      <div id="col-contactar_interesado" class="flex-1 overflow-y-auto space-y-3 p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'contactar_interesado')"></div>
+      <div id="col-contactar_interesado" class="flex-1 overflow-y-auto columna-domino p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'contactar_interesado')"></div>
     </section>
 
-    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[80vh]">
+    <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
       <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
         <h2 class="font-bold text-sky-800 text-xs tracking-wide uppercase">En su Tejado</h2>
         <span id="badge-informe_externo" class="text-xs bg-sky-100 font-bold px-2 py-0.5 rounded-full text-sky-700">0</span>
       </div>
-      <div id="col-informe_externo" class="flex-1 overflow-y-auto space-y-3 p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'informe_externo')"></div>
+      <div id="col-informe_externo" class="flex-1 overflow-y-auto columna-domino p-1 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'informe_externo')"></div>
     </section>
   </main>
 
@@ -231,7 +231,7 @@
       el.id = `card-${exp.codigo}`;
       el.draggable = true;
       el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
-      el.className = 'bg-white p-4 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition cursor-grab active:cursor-grabbing';
+      el.className = 'tarjeta-domino bg-white p-4 rounded-xl border border-slate-200 cursor-grab active:cursor-grabbing';
 
       let circulo = 'bg-slate-300 ring-slate-100 text-slate-600';
       let badgeTexto = 'Sin plazo';
