@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Torre de Control - Carreteras</title>
   <script src="https://cdn.tailwindcss.com"></script>
- <style>
+  <style>
     @media print {
       body { background: white !important; padding: 0 !important; color: black !important; }
       header, .no-imprimir { display: none !important; }
@@ -14,31 +14,32 @@
       .tabla-print th, .tabla-print td { border-bottom: 1px solid #e2e8f0 !important; }
     }
 
-    /* EFECTO DOMINÓ / BARAJA */
+    /* EFECTO DOMINÓ / BARAJA COMPACTA */
     .columna-domino {
       display: flex;
       flex-direction: column;
-      padding-top: 8px;
-      padding-bottom: 120px; /* espacio para que la última no quede cortada al abrirse */
+      padding-top: 6px;
+      padding-bottom: 180px; /* Margen para que la última tarjeta no se corte al abrirse */
     }
 
     .tarjeta-domino {
       position: relative;
-      margin-top: -68px; /* Monta una tarjeta encima de la otra */
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 -2px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      /* Solapamiento vertical pronunciado (~1.5 cm más arriba) */
+      margin-top: -135px;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 -3px 8px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
     }
 
     .tarjeta-domino:first-child {
       margin-top: 0 !important;
     }
 
-    /* Cuando pasas el ratón por encima */
+    /* Al pasar el ratón: se despliega completa, empuja a las demás y se eleva */
     .tarjeta-domino:hover {
-      margin-bottom: 72px; /* Empuja a las siguientes hacia abajo para que se lea entera */
-      transform: translateY(-4px) scale(1.02);
+      margin-bottom: 140px; /* Despeja el espacio inferior para mostrar carretera y notas */
+      transform: translateY(-6px) scale(1.02);
       z-index: 50 !important;
-      box-shadow: 0 14px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 16px 28px -6px rgba(0, 0, 0, 0.18), 0 8px 12px -6px rgba(0, 0, 0, 0.1);
       border-color: #94a3b8;
     }
   </style>
@@ -70,10 +71,10 @@
     </div>
   </header>
 
-<!-- VISTA 1: TABLERO KANBAN -->
+  <!-- VISTA 1: TABLERO KANBAN CON COLUMNAS DOMINÓ -->
   <main id="vista-tablero" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
     <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
-      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
         <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Requerimientos / Subsanación</h2>
         <span id="badge-requerimiento" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
       </div>
@@ -81,7 +82,7 @@
     </section>
 
     <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
-      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
         <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Visita de Campo</h2>
         <span id="badge-visita_campo" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
       </div>
@@ -89,7 +90,7 @@
     </section>
 
     <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
-      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
         <h2 class="font-bold text-slate-700 text-xs tracking-wide uppercase">Contactar Interesado</h2>
         <span id="badge-contactar_interesado" class="text-xs bg-slate-200 font-bold px-2 py-0.5 rounded-full text-slate-600">0</span>
       </div>
@@ -97,7 +98,7 @@
     </section>
 
     <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col h-[82vh]">
-      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
         <h2 class="font-bold text-sky-800 text-xs tracking-wide uppercase">En su Tejado</h2>
         <span id="badge-informe_externo" class="text-xs bg-sky-100 font-bold px-2 py-0.5 rounded-full text-sky-700">0</span>
       </div>
@@ -185,7 +186,6 @@
       });
     }
 
-    // FILTRO EN TIEMPO REAL (al teclear en los inputs)
     function obtenerFiltrados() {
       const fCarretera = document.getElementById('filtro-carretera').value.trim().toLowerCase();
       const fPk = document.getElementById('filtro-pk').value.trim().toLowerCase();
@@ -231,7 +231,7 @@
       el.id = `card-${exp.codigo}`;
       el.draggable = true;
       el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
-      el.className = 'tarjeta-domino bg-white p-4 rounded-xl border border-slate-200 cursor-grab active:cursor-grabbing';
+      el.className = 'tarjeta-domino bg-white p-3.5 rounded-xl border border-slate-200 cursor-grab active:cursor-grabbing';
 
       let circulo = 'bg-slate-300 ring-slate-100 text-slate-600';
       let badgeTexto = 'Sin plazo';
@@ -262,37 +262,44 @@
       }
 
       const linkHtml = exp.url_iternova 
-        ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir en IterNova" class="font-bold text-blue-700 hover:text-blue-900 hover:underline text-base tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
-        : `<span class="font-bold text-slate-900 text-base tracking-tight">${exp.codigo}</span>`;
+        ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir en IterNova" class="font-bold text-blue-700 hover:text-blue-900 hover:underline text-sm tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
+        : `<span class="font-bold text-slate-900 text-sm tracking-tight">${exp.codigo}</span>`;
 
+      // Estructura: La cabecera visible contiene Semáforo + Código + Título compacto
+      // La carretera, notas y botón de acción quedan ocultos hasta pasar el ratón (hover)
       el.innerHTML = `
-        <div class="flex items-center justify-between gap-3 mb-2">
-          <div class="flex items-center gap-2.5">
-            <span title="${badgeTexto}" class="w-6 h-6 rounded-full ring-4 ${circulo} flex-shrink-0"></span>
+        <!-- CABECERA SIEMPRE VISIBLE EN LA BARAJA -->
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <div class="flex items-center gap-2 min-w-0">
+            <span title="${badgeTexto}" class="w-4 h-4 rounded-full ring-2 ${circulo} flex-shrink-0"></span>
             ${linkHtml}
           </div>
-          <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto y borrar" class="text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-1 rounded text-xs font-semibold border border-transparent hover:border-emerald-200 transition">
+          <button onclick="archivarExpediente('${exp.codigo}')" title="Dar por resuelto y borrar" class="text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-0.5 rounded text-xs font-semibold border border-transparent hover:border-emerald-200 transition">
             ✓ Hecho
           </button>
         </div>
         
-        <p class="font-medium text-slate-800 text-xs mb-2 leading-snug">${exp.titulo || 'Sin descripción'}</p>
+        <p class="font-semibold text-slate-800 text-xs leading-snug line-clamp-1 mb-2.5" title="${exp.titulo || 'Sin descripción'}">
+          ${exp.titulo || 'Sin descripción'}
+        </p>
         
-        <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded mb-2">
-          🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
-        </div>
+        <!-- DETALLES QUE ASOMAN AL DESPLEGAR EN HOVER -->
+        <div class="space-y-2 pt-1 border-t border-slate-100">
+          <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+            🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
+          </div>
 
-        ${exp.notas ? `<div class="text-xs bg-amber-50 border-l-2 border-amber-400 p-1.5 text-amber-900 rounded-r mb-2">📝 ${exp.notas}</div>` : ''}
+          ${exp.notas ? `<div class="text-xs bg-amber-50 border-l-2 border-amber-400 p-1.5 text-amber-900 rounded-r">📝 ${exp.notas}</div>` : ''}
 
-        <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-100">
-          <span>Límite: ${exp.fecha_limite || 'N/A'}</span>
-          <span class="font-semibold text-slate-600">${badgeTexto}</span>
+          <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-100">
+            <span>Límite: ${exp.fecha_limite || 'N/A'}</span>
+            <span class="font-semibold text-slate-600">${badgeTexto}</span>
+          </div>
         </div>
       `;
       return el;
     }
 
-    // CAMBIO DE VISTA (TABLERO <-> INFORME)
     function generarInforme() {
       const filtrados = obtenerFiltrados();
       const tbody = document.getElementById('filas-informe');
