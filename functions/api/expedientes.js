@@ -1,3 +1,30 @@
+// Añadir esta función en functions/api/expedientes.js
+export async function onRequestDelete({ request, env }) {
+  try {
+    const { codigo } = await request.json();
+    
+    if (!codigo) {
+      return new Response(JSON.stringify({ error: 'Falta el código de expediente' }), { status: 400 });
+    }
+
+    await env.DB.prepare('DELETE FROM expedientes_seguimiento WHERE codigo = ?')
+      .bind(codigo)
+      .run();
+
+    return new Response(JSON.stringify({ ok: true, eliminado: codigo }), {
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), { 
+      status: 500,
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    });
+  }
+}
+
 export async function onRequestGet({ env }) {
   try {
     const query = `
@@ -93,7 +120,7 @@ export async function onRequestOptions() {
   return new Response(null, {
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type'
     }
   });
