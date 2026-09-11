@@ -36,17 +36,17 @@
       .tabla-print th, .tabla-print td { border-bottom: 1px solid #e2e8f0 !important; color: black !important; }
     }
 
- /* EFECTO DOMINÓ CON ESPACIO PARA EL GLOW */
+    /* EFECTO DOMINÓ CON RESGUARDO LATERAL */
     .columna-domino {
       display: flex;
       flex-direction: column;
       gap: 14px;
-      padding: 10px 12px 70px 12px; /* Margen interior para que el brillo lateral no se corte */
+      padding: 10px 12px 70px 12px;
     }
 
     .tarjeta-domino {
       position: relative;
-      z-index: 1; /* Nivel base */
+      z-index: 1;
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
       box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.6);
     }
@@ -59,14 +59,14 @@
       margin-top: 0;
     }
 
-    /* HOVER: SE SITÚA POR ENCIMA DE TODAS Y MUESTRA EL BORDE 360° COMPLETO */
+    /* HOVER: ENCENDIDO NEÓN 360° TOTAL ALREDEDOR */
     .tarjeta-domino:hover {
       transform: translateY(-4px) scale(1.02);
-      z-index: 999 !important; /* Salta por encima de las tarjetas superior e inferior */
+      z-index: 999 !important;
       border-color: #38bdf8 !important;
       box-shadow: 
         0 0 0 2px #38bdf8,
-        0 0 16px 4px rgba(56, 189, 248, 0.65) !important;
+        0 0 18px 5px rgba(56, 189, 248, 0.65) !important;
     }
 
     .tarjeta-domino:hover .detalles-ocultos {
@@ -119,7 +119,7 @@
     </div>
   </header>
 
-  <!-- VISTA 1: TABLERO KANBAN CON MAYOR CONTRASTE -->
+  <!-- VISTA 1: TABLERO KANBAN CON CONTRASTE -->
   <main id="vista-tablero" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
     <!-- Columna 1 -->
     <section class="bg-slate-800/95 border-2 border-slate-600/70 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/70">
@@ -127,7 +127,7 @@
         <h2 class="font-bold text-slate-100 text-xs tracking-wider uppercase">Requerimientos / Subsanación</h2>
         <span id="badge-requerimiento" class="text-xs bg-slate-950 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
       </div>
-      <div id="col-requerimiento" class="flex-1 overflow-y-auto columna-domino pr-1.5 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'requerimiento')"></div>
+      <div id="col-requerimiento" class="flex-1 overflow-y-auto columna-domino rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'requerimiento')"></div>
     </section>
 
     <!-- Columna 2 -->
@@ -136,7 +136,7 @@
         <h2 class="font-bold text-slate-100 text-xs tracking-wider uppercase">Visita de Campo</h2>
         <span id="badge-visita_campo" class="text-xs bg-slate-950 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
       </div>
-      <div id="col-visita_campo" class="flex-1 overflow-y-auto columna-domino pr-1.5 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'visita_campo')"></div>
+      <div id="col-visita_campo" class="flex-1 overflow-y-auto columna-domino rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'visita_campo')"></div>
     </section>
 
     <!-- Columna 3 -->
@@ -145,7 +145,7 @@
         <h2 class="font-bold text-slate-100 text-xs tracking-wider uppercase">Contactar Interesado</h2>
         <span id="badge-contactar_interesado" class="text-xs bg-slate-950 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
       </div>
-      <div id="col-contactar_interesado" class="flex-1 overflow-y-auto columna-domino pr-1.5 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'contactar_interesado')"></div>
+      <div id="col-contactar_interesado" class="flex-1 overflow-y-auto columna-domino rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'contactar_interesado')"></div>
     </section>
 
     <!-- Columna 4 -->
@@ -154,7 +154,7 @@
         <h2 class="font-bold text-sky-300 text-xs tracking-wider uppercase">En su Tejado</h2>
         <span id="badge-informe_externo" class="text-xs bg-slate-950 font-bold px-2.5 py-0.5 rounded-full text-sky-300 border border-sky-600/80">0</span>
       </div>
-      <div id="col-informe_externo" class="flex-1 overflow-y-auto columna-domino pr-1.5 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'informe_externo')"></div>
+      <div id="col-informe_externo" class="flex-1 overflow-y-auto columna-domino rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'informe_externo')"></div>
     </section>
   </main>
 
@@ -284,7 +284,6 @@
       el.draggable = true;
       el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
       
-      // Fondo negro profundo y perfilado visible en reposo
       el.className = 'tarjeta-domino bg-slate-950 p-4 rounded-xl border border-slate-600 cursor-grab active:cursor-grabbing';
 
       let circulo = 'bg-slate-600 ring-slate-700 text-slate-400';
@@ -319,6 +318,21 @@
         ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir en IterNova" class="font-bold text-cyan-400 hover:text-cyan-300 hover:underline text-sm tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
         : `<span class="font-bold text-cyan-400 text-sm tracking-tight">${exp.codigo}</span>`;
 
+      // Detección de coordenadas exactas en el campo de localización
+      let textoLoc = exp.localizacion || 'Carretera / PK no asignado';
+      let coordsMap = '';
+
+      if (textoLoc.includes('|')) {
+        const partes = textoLoc.split('|');
+        textoLoc = partes[0].trim();
+        coordsMap = partes[1].trim();
+      }
+
+      // Si hay coordenadas clava el punto exacto con vista satélite (&t=k)
+      const urlMapa = coordsMap 
+        ? `https://www.google.com/maps?q=${coordsMap}&t=k`
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(textoLoc + ' Aragón')}`;
+
       el.innerHTML = `
         <div class="flex items-center justify-between gap-2 mb-2">
           <div class="flex items-center gap-2.5 min-w-0">
@@ -335,9 +349,10 @@
         </p>
         
         <div class="detalles-ocultos pt-2.5 border-t border-slate-700/80 space-y-2">
-          <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-900 text-cyan-300 border border-slate-600 px-2.5 py-1 rounded">
-            🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
-          </div>
+          <a href="${urlMapa}" target="_blank" title="Abrir ubicación exacta en Google Maps Satélite" class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-900 hover:bg-slate-850 text-cyan-300 hover:text-cyan-200 border border-slate-600 hover:border-cyan-400 px-2.5 py-1 rounded transition group">
+            <span>🛣️ ${textoLoc}</span>
+            <span class="text-[10px] text-slate-400 group-hover:text-cyan-300">🗺️ ↗</span>
+          </a>
 
           ${exp.notas ? `<div class="text-xs bg-amber-950/40 border-l-2 border-amber-500 p-2 text-amber-200 rounded-r">📝 ${exp.notas}</div>` : ''}
 
@@ -359,11 +374,12 @@
         tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-500 font-medium">No hay expedientes que coincidan con los filtros.</td></tr>`;
       } else {
         filtrados.forEach(exp => {
+          const locLimpia = (exp.localizacion || 'Sin datos').split('|')[0].trim();
           const tr = document.createElement('tr');
           tr.className = 'hover:bg-slate-800/50 transition';
           tr.innerHTML = `
             <td class="py-3 px-3 font-bold font-mono text-cyan-400">${exp.codigo}</td>
-            <td class="py-3 px-3 font-mono font-semibold text-slate-300">${exp.localizacion || 'Sin datos'}</td>
+            <td class="py-3 px-3 font-mono font-semibold text-slate-300">${locLimpia}</td>
             <td class="py-3 px-3 text-slate-200 max-w-xs">${exp.titulo || '-'}</td>
             <td class="py-3 px-3 capitalize text-slate-400">${(exp.estado_bloqueo || '').replace('_', ' ')}</td>
             <td class="py-3 px-3 text-slate-400 whitespace-nowrap">${exp.fecha_limite || 'Sin fecha'}</td>
