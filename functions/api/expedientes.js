@@ -1,4 +1,4 @@
-// Añadir esta función en functions/api/expedientes.js
+// functions/api/expedientes.js
 export async function onRequestDelete({ request, env }) {
   try {
     const { codigo } = await request.json();
@@ -96,11 +96,15 @@ export async function onRequestPost({ request, env }) {
 
 export async function onRequestPatch({ request, env }) {
   try {
-    const { codigo, estado_bloqueo, resuelto } = await request.json();
+    const { codigo, estado_bloqueo, resuelto, notas } = await request.json();
     
     if (resuelto !== undefined) {
       await env.DB.prepare('UPDATE expedientes_seguimiento SET resuelto = ?, updated_at = CURRENT_TIMESTAMP WHERE codigo = ?')
         .bind(resuelto, codigo)
+        .run();
+    } else if (notas !== undefined) {
+      await env.DB.prepare('UPDATE expedientes_seguimiento SET notas = ?, updated_at = CURRENT_TIMESTAMP WHERE codigo = ?')
+        .bind(notas, codigo)
         .run();
     } else if (estado_bloqueo) {
       await env.DB.prepare('UPDATE expedientes_seguimiento SET estado_bloqueo = ?, updated_at = CURRENT_TIMESTAMP WHERE codigo = ?')
