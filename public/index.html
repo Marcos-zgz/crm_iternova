@@ -70,7 +70,7 @@
     }
 
     .tarjeta-domino:hover .detalles-ocultos {
-      max-height: 240px;
+      max-height: 280px;
       opacity: 1;
       margin-top: 12px;
     }
@@ -278,6 +278,49 @@
       aplicarFiltroEnVivo();
     }
 
+    function renderizarBloqueNota(codigo, nota) {
+      if (nota && nota.trim()) {
+        return `
+          <div onclick="editarNota('${codigo}', event)" title="Clic para modificar esta nota" class="text-xs bg-amber-950/40 hover:bg-amber-950/70 border-l-2 border-amber-500 p-2 text-amber-200 rounded-r cursor-pointer transition flex items-start justify-between gap-1 group/nota">
+            <span class="break-words">📝 ${nota.trim()}</span>
+            <span class="text-[11px] text-amber-400 opacity-0 group-hover/nota:opacity-100 transition flex-shrink-0">✏️</span>
+          </div>`;
+      } else {
+        return `
+          <button onclick="editarNota('${codigo}', event)" class="text-[11px] text-slate-400 hover:text-amber-300 border border-dashed border-slate-700 hover:border-amber-500/60 rounded px-2.5 py-1 w-full text-left transition flex items-center justify-between">
+            <span>+ Añadir nota / atasco</span>
+            <span class="text-[10px]">✏️</span>
+          </button>`;
+      }
+    }
+
+    async function editarNota(codigo, event) {
+      if (event) event.stopPropagation();
+
+      const exp = todosLosExpedientes.find(e => e.codigo === codigo);
+      const notaActual = exp ? (exp.notas || '') : '';
+
+      const nuevaNota = prompt(`Modificar nota / atasco de ${codigo}:`, notaActual);
+      if (nuevaNota === null) return;
+
+      const cont = document.getElementById(`contenedor-nota-${codigo}`);
+
+      try {
+        const res = await fetch('/api/expedientes', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ codigo: codigo, notas: nuevaNota.trim() })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        if (exp) exp.notas = nuevaNota.trim();
+        if (cont) cont.innerHTML = renderizarBloqueNota(codigo, nuevaNota.trim());
+      } catch (err) {
+        alert(`Error al guardar la nota: ${err.message}`);
+      }
+    }
+
     function crearTarjeta(exp) {
       const el = document.createElement('article');
       el.id = `card-${exp.codigo}`;
@@ -318,7 +361,7 @@
         ? `<a href="${exp.url_iternova}" target="_blank" title="Abrir en IterNova" class="font-bold text-cyan-400 hover:text-cyan-300 hover:underline text-sm tracking-tight inline-flex items-center gap-1">${exp.codigo} <span class="text-xs">↗</span></a>`
         : `<span class="font-bold text-cyan-400 text-sm tracking-tight">${exp.codigo}</span>`;
 
-      // Detección de coordenadas exactas en el campo de localización
+      // Detección de coordenadas exactas
       let textoLoc = exp.localizacion || 'Carretera / PK no asignado';
       let coordsMap = '';
 
@@ -328,7 +371,6 @@
         coordsMap = partes[1].trim();
       }
 
-      // Si hay coordenadas clava el punto exacto con vista satélite (&t=k)
       const urlMapa = coordsMap 
         ? `https://www.google.com/maps?q=${coordsMap}&t=k`
         : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(textoLoc + ' Aragón')}`;
@@ -348,13 +390,15 @@
           ${exp.titulo || 'Sin descripción'}
         </p>
         
-        <div class="detalles-ocultos pt-2.5 border-t border-slate-700/80 space-y-2">
+        <div class="detalles-ocultos pt-2.5 border-t border-slate-700/80 space-y-2.5">
           <a href="${urlMapa}" target="_blank" title="Abrir ubicación exacta en Google Maps Satélite" class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-900 hover:bg-slate-850 text-cyan-300 hover:text-cyan-200 border border-slate-600 hover:border-cyan-400 px-2.5 py-1 rounded transition group">
             <span>🛣️ ${textoLoc}</span>
             <span class="text-[10px] text-slate-400 group-hover:text-cyan-300">🗺️ ↗</span>
           </a>
 
-          ${exp.notas ? `<div class="text-xs bg-amber-950/40 border-l-2 border-amber-500 p-2 text-amber-200 rounded-r">📝 ${exp.notas}</div>` : ''}
+          <div id="contenedor-nota-${exp.codigo}">
+            ${renderizarBloqueNota(exp.codigo, exp.notas)}
+          </div>
 
           <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-700/60 font-mono">
             <span>Límite: ${exp.fecha_limite || 'N/A'}</span>
