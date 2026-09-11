@@ -36,17 +36,17 @@
       .tabla-print th, .tabla-print td { border-bottom: 1px solid #e2e8f0 !important; color: black !important; }
     }
 
-    /* EFECTO DOMINÓ */
+ /* EFECTO DOMINÓ CON ESPACIO PARA EL GLOW */
     .columna-domino {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding-top: 6px;
-      padding-bottom: 70px;
+      gap: 14px;
+      padding: 10px 12px 70px 12px; /* Margen interior para que el brillo lateral no se corte */
     }
 
     .tarjeta-domino {
       position: relative;
+      z-index: 1; /* Nivel base */
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
       box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.6);
     }
@@ -59,15 +59,14 @@
       margin-top: 0;
     }
 
-    /* HOVER: ENCENDIDO NEÓN 360° TOTAL ALREDEDOR */
+    /* HOVER: SE SITÚA POR ENCIMA DE TODAS Y MUESTRA EL BORDE 360° COMPLETO */
     .tarjeta-domino:hover {
       transform: translateY(-4px) scale(1.02);
-      z-index: 50 !important;
+      z-index: 999 !important; /* Salta por encima de las tarjetas superior e inferior */
       border-color: #38bdf8 !important;
       box-shadow: 
         0 0 0 2px #38bdf8,
-        0 0 22px 6px rgba(56, 189, 248, 0.65),
-        0 0 40px 10px rgba(56, 189, 248, 0.25) !important;
+        0 0 16px 4px rgba(56, 189, 248, 0.65) !important;
     }
 
     .tarjeta-domino:hover .detalles-ocultos {
