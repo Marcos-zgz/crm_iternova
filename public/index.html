@@ -6,7 +6,7 @@
   <title>Torre de Control - Carreteras</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* BARRAS DE DESPLAZAMIENTO OSCURAS (Elimina el blanco por completo) */
+    /* BARRAS DE DESPLAZAMIENTO OSCURAS */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -16,7 +16,7 @@
       border-radius: 8px;
     }
     ::-webkit-scrollbar-thumb {
-      background: #3b4d67;
+      background: #475569;
       border-radius: 8px;
     }
     ::-webkit-scrollbar-thumb:hover {
@@ -24,7 +24,7 @@
     }
     * {
       scrollbar-width: thin;
-      scrollbar-color: #3b4d67 rgba(15, 23, 42, 0.6);
+      scrollbar-color: #475569 rgba(15, 23, 42, 0.6);
     }
 
     /* IMPRESIÓN LIMPIA */
@@ -36,7 +36,7 @@
       .tabla-print th, .tabla-print td { border-bottom: 1px solid #e2e8f0 !important; color: black !important; }
     }
 
-    /* EFECTO DOMINÓ CON RESPLANDOR FLÚOR POTENTE */
+    /* EFECTO DOMINÓ */
     .columna-domino {
       display: flex;
       flex-direction: column;
@@ -48,7 +48,7 @@
     .tarjeta-domino {
       position: relative;
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
-      box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.6);
     }
 
     .tarjeta-domino .detalles-ocultos {
@@ -59,15 +59,15 @@
       margin-top: 0;
     }
 
-    /* HOVER: Brillo flúor cian de alta intensidad y borde activo */
+    /* HOVER: ENCENDIDO NEÓN 360° TOTAL ALREDEDOR */
     .tarjeta-domino:hover {
       transform: translateY(-4px) scale(1.02);
       z-index: 50 !important;
       border-color: #38bdf8 !important;
       box-shadow: 
-        0 0 0 1px #38bdf8,
-        0 0 25px 4px rgba(56, 189, 248, 0.45),
-        0 14px 28px -4px rgba(0, 0, 0, 0.7) !important;
+        0 0 0 2px #38bdf8,
+        0 0 22px 6px rgba(56, 189, 248, 0.65),
+        0 0 40px 10px rgba(56, 189, 248, 0.25) !important;
     }
 
     .tarjeta-domino:hover .detalles-ocultos {
@@ -76,7 +76,7 @@
       margin-top: 12px;
     }
 
-    /* GLOW DE LOS SEMÁFOROS */
+    /* GLOW SEMÁFOROS */
     .glow-rose {
       box-shadow: 0 0 12px 2px rgba(244, 63, 94, 0.85);
     }
@@ -91,12 +91,12 @@
     }
   </style>
 </head>
-<body class="bg-[#06080d] min-h-screen text-slate-100 font-sans p-6 selection:bg-cyan-500 selection:text-black">
+<body class="bg-[#05070b] min-h-screen text-slate-100 font-sans p-6 selection:bg-cyan-500 selection:text-black">
 
   <!-- Cabecera de control -->
-  <header class="bg-slate-900 border-b border-slate-800 -mx-6 -mt-6 mb-8 px-8 py-4 flex flex-wrap justify-between items-center gap-4 shadow-xl shadow-black/50">
+  <header class="bg-slate-900 border-b border-slate-700/80 -mx-6 -mt-6 mb-8 px-8 py-4 flex flex-wrap justify-between items-center gap-4 shadow-2xl shadow-black/70">
     <div class="flex items-center gap-3">
-      <span class="text-xl">🛣️</span>
+      <span class="text-xl drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]">🛣️</span>
       <div>
         <h1 class="text-xl font-bold tracking-tight text-white leading-none">
           Torre de Control <span class="text-cyan-400 font-mono text-sm">· Carreteras</span>
@@ -107,61 +107,62 @@
 
     <!-- Filtros en cabecera -->
     <div id="filtros-cabecera" class="flex flex-wrap items-center gap-2">
-      <input type="text" id="filtro-carretera" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar vía (ej: A-123)" class="bg-slate-950 border border-slate-700 text-cyan-300 placeholder-slate-500 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 w-36 transition">
-      <input type="text" id="filtro-pk" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar PK / texto" class="bg-slate-950 border border-slate-700 text-cyan-300 placeholder-slate-500 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 w-32 transition">
-      <button onclick="limpiarFiltros()" title="Limpiar filtros" class="bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 transition">✕</button>
+      <input type="text" id="filtro-carretera" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar vía (ej: A-123)" class="bg-slate-950 border border-slate-600 text-cyan-300 placeholder-slate-400 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 w-36 transition">
+      <input type="text" id="filtro-pk" oninput="aplicarFiltroEnVivo()" placeholder="Filtrar PK / texto" class="bg-slate-950 border border-slate-600 text-cyan-300 placeholder-slate-400 text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 w-32 transition">
+      <button onclick="limpiarFiltros()" title="Limpiar filtros" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs px-2.5 py-1.5 rounded-lg border border-slate-600 transition">✕</button>
 
       <button onclick="generarInforme()" class="bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-[0_0_15px_rgba(6,182,212,0.25)] flex items-center gap-1.5 ml-2">
         <span>📄</span> Hoja de Ruta / PDF
       </button>
-      <button onclick="cargarExpedientes()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+      <button onclick="cargarExpedientes()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-600 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
         🔄 Actualizar
       </button>
     </div>
   </header>
 
-<!-- VISTA 1: TABLERO KANBAN CON CONTRASTE REFORZADO -->
+  <!-- VISTA 1: TABLERO KANBAN CON MAYOR CONTRASTE -->
   <main id="vista-tablero" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
     <!-- Columna 1 -->
-    <section class="bg-slate-800/70 border border-slate-600/60 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/60 backdrop-blur-sm">
-      <div class="flex items-center justify-between mb-3 border-b border-slate-700/80 pb-2.5">
+    <section class="bg-slate-800/95 border-2 border-slate-600/70 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/70">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-600/80 pb-2.5">
         <h2 class="font-bold text-slate-100 text-xs tracking-wider uppercase">Requerimientos / Subsanación</h2>
-        <span id="badge-requerimiento" class="text-xs bg-slate-900 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
+        <span id="badge-requerimiento" class="text-xs bg-slate-950 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
       </div>
       <div id="col-requerimiento" class="flex-1 overflow-y-auto columna-domino pr-1.5 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'requerimiento')"></div>
     </section>
 
     <!-- Columna 2 -->
-    <section class="bg-slate-800/70 border border-slate-600/60 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/60 backdrop-blur-sm">
-      <div class="flex items-center justify-between mb-3 border-b border-slate-700/80 pb-2.5">
+    <section class="bg-slate-800/95 border-2 border-slate-600/70 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/70">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-600/80 pb-2.5">
         <h2 class="font-bold text-slate-100 text-xs tracking-wider uppercase">Visita de Campo</h2>
-        <span id="badge-visita_campo" class="text-xs bg-slate-900 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
+        <span id="badge-visita_campo" class="text-xs bg-slate-950 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
       </div>
       <div id="col-visita_campo" class="flex-1 overflow-y-auto columna-domino pr-1.5 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'visita_campo')"></div>
     </section>
 
     <!-- Columna 3 -->
-    <section class="bg-slate-800/70 border border-slate-600/60 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/60 backdrop-blur-sm">
-      <div class="flex items-center justify-between mb-3 border-b border-slate-700/80 pb-2.5">
+    <section class="bg-slate-800/95 border-2 border-slate-600/70 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/70">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-600/80 pb-2.5">
         <h2 class="font-bold text-slate-100 text-xs tracking-wider uppercase">Contactar Interesado</h2>
-        <span id="badge-contactar_interesado" class="text-xs bg-slate-900 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
+        <span id="badge-contactar_interesado" class="text-xs bg-slate-950 font-bold px-2.5 py-0.5 rounded-full text-cyan-400 border border-slate-600">0</span>
       </div>
       <div id="col-contactar_interesado" class="flex-1 overflow-y-auto columna-domino pr-1.5 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'contactar_interesado')"></div>
     </section>
 
     <!-- Columna 4 -->
-    <section class="bg-slate-800/70 border border-sky-700/60 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/60 backdrop-blur-sm">
-      <div class="flex items-center justify-between mb-3 border-b border-sky-800/70 pb-2.5">
+    <section class="bg-slate-800/95 border-2 border-sky-600/60 rounded-2xl p-4 flex flex-col h-[82vh] shadow-2xl shadow-black/70">
+      <div class="flex items-center justify-between mb-3 border-b border-sky-600/70 pb-2.5">
         <h2 class="font-bold text-sky-300 text-xs tracking-wider uppercase">En su Tejado</h2>
-        <span id="badge-informe_externo" class="text-xs bg-slate-900 font-bold px-2.5 py-0.5 rounded-full text-sky-300 border border-sky-700">0</span>
+        <span id="badge-informe_externo" class="text-xs bg-slate-950 font-bold px-2.5 py-0.5 rounded-full text-sky-300 border border-sky-600/80">0</span>
       </div>
       <div id="col-informe_externo" class="flex-1 overflow-y-auto columna-domino pr-1.5 rounded-lg" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'informe_externo')"></div>
     </section>
   </main>
+
   <!-- VISTA 2: INFORME / IMPRESIÓN -->
   <section id="vista-informe" class="hidden max-w-7xl mx-auto">
-    <div class="no-imprimir flex items-center justify-between bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-800 mb-6">
-      <button onclick="volverAlTablero()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1 border border-slate-700">
+    <div class="no-imprimir flex items-center justify-between bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-700 mb-6">
+      <button onclick="volverAlTablero()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs px-4 py-2 rounded-lg transition flex items-center gap-1 border border-slate-600">
         ← Volver al Tablero
       </button>
       <div class="flex items-center gap-3">
@@ -172,8 +173,8 @@
       </div>
     </div>
 
-    <div class="bg-slate-900 p-8 rounded-xl border border-slate-800 tabla-print">
-      <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-end">
+    <div class="bg-slate-900 p-8 rounded-xl border border-slate-700 tabla-print">
+      <div class="border-b border-slate-700 pb-4 mb-6 flex justify-between items-end">
         <div>
           <h2 class="text-xl font-bold text-white">Hoja de Ruta · Inspección de Carreteras</h2>
           <p class="text-xs text-slate-400 mt-1">Expedientes filtrados para visita técnica y seguimiento</p>
@@ -183,7 +184,7 @@
 
       <table class="w-full text-left text-xs border-collapse">
         <thead>
-          <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
+          <tr class="border-b border-slate-700 text-slate-400 uppercase text-[10px] tracking-wider">
             <th class="py-2.5 px-3">Expediente</th>
             <th class="py-2.5 px-3">Ubicación (Carretera / PK)</th>
             <th class="py-2.5 px-3">Asunto / Título</th>
@@ -192,7 +193,7 @@
             <th class="py-2.5 px-3">Observaciones / Notas</th>
           </tr>
         </thead>
-        <tbody id="filas-informe" class="divide-y divide-slate-800"></tbody>
+        <tbody id="filas-informe" class="divide-y divide-slate-700"></tbody>
       </table>
     </div>
   </section>
@@ -284,8 +285,8 @@
       el.draggable = true;
       el.ondragstart = (e) => e.dataTransfer.setData('text/plain', exp.codigo);
       
-      // Borde bien definido y fondo diferenciado
-      el.className = 'tarjeta-domino bg-slate-950 p-4 rounded-xl border border-slate-700/80 cursor-grab active:cursor-grabbing';
+      // Fondo negro profundo y perfilado visible en reposo
+      el.className = 'tarjeta-domino bg-slate-950 p-4 rounded-xl border border-slate-600 cursor-grab active:cursor-grabbing';
 
       let circulo = 'bg-slate-600 ring-slate-700 text-slate-400';
       let badgeTexto = 'Sin plazo';
@@ -334,14 +335,14 @@
           ${exp.titulo || 'Sin descripción'}
         </p>
         
-        <div class="detalles-ocultos pt-2.5 border-t border-slate-800 space-y-2">
-          <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-900 text-cyan-300 border border-slate-700 px-2.5 py-1 rounded">
+        <div class="detalles-ocultos pt-2.5 border-t border-slate-700/80 space-y-2">
+          <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-slate-900 text-cyan-300 border border-slate-600 px-2.5 py-1 rounded">
             🛣️ ${exp.localizacion || 'Carretera / PK no asignado'}
           </div>
 
           ${exp.notas ? `<div class="text-xs bg-amber-950/40 border-l-2 border-amber-500 p-2 text-amber-200 rounded-r">📝 ${exp.notas}</div>` : ''}
 
-          <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-800/80 font-mono">
+          <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-700/60 font-mono">
             <span>Límite: ${exp.fecha_limite || 'N/A'}</span>
             <span class="font-semibold text-slate-300">${badgeTexto}</span>
           </div>
@@ -421,16 +422,16 @@
 
     function allowDrop(e) {
       e.preventDefault();
-      e.currentTarget.classList.add('bg-slate-800/60');
+      e.currentTarget.classList.add('bg-slate-700/40');
     }
 
     function dragLeave(e) {
-      e.currentTarget.classList.remove('bg-slate-800/60');
+      e.currentTarget.classList.remove('bg-slate-700/40');
     }
 
     async function drop(e, nuevoEstado) {
       e.preventDefault();
-      e.currentTarget.classList.remove('bg-slate-800/60');
+      e.currentTarget.classList.remove('bg-slate-700/40');
       const codigo = e.dataTransfer.getData('text/plain');
       const tarjeta = document.getElementById(`card-${codigo}`);
       if (!tarjeta) return;
